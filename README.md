@@ -40,7 +40,7 @@ it — invalid transitions are logged and skipped without stopping the system.
 | `StateProcessor` | Drains the queue, validates each request, applies or rejects it |
 
 ## Class Diagram
-![Class Diagram](design/class_diagram.png)
+![Class Diagram](image/LLD_Diagram.jpg)
 
 **Relationships:**
 | From | To | Type | Relationship |
