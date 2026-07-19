@@ -29,6 +29,9 @@ it — invalid transitions are logged and skipped without stopping the system.
 - Delivered → Returned
 - Cancelled / Returned → (terminal states, no further transitions)
 
+## Class Diagram
+<img width="1307" height="1195" alt="LLD_Diagram" src="https://github.com/user-attachments/assets/940aeb50-ebdb-49ff-aeb0-254883626081" />
+
 ## Classes
 | Class | Responsibility |
 |---|---|
