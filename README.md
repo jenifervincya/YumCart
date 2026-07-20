@@ -87,11 +87,3 @@ wired to the Java backend) — see **Design Notes** below.
   (for a failed delivery attempt) that exists only in the JS demo layer and
   is not yet part of the core `OrderStatus` enum or transition table — a
   candidate extension if adopted into the core design.
-
-## Possible Extensions
-- Wrap the core Java classes in a REST API (e.g. Spring Boot) so the
-  frontend talks to a real backend instead of local mock data, keeping both
-  views in sync automatically.
-- Decide whether `NOT_DELIVERED` becomes a real state in the core design,
-  and update the enum, validator, and diagram to match if so.
-- Add authentication so only authorized staff can reach the seller view.
