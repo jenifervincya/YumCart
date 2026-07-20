@@ -71,7 +71,7 @@ Both views currently share local mock order data within the page (not yet
 wired to the Java backend) — see **Design Notes** below.
 
 **Live demo (GitHub Pages):**
-`(https://jenifervincya.github.io/Order_Tracking_System/)`
+`https://jenifervincya.github.io/Order_Tracking_System/`
 
 ## Design Notes
 - Rejected transitions don't stop the queue — the system logs and continues
