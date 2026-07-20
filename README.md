@@ -42,7 +42,6 @@ it — invalid transitions are logged and skipped without stopping the system.
 | `OrderStore` | Stores and retrieves `Order` objects by ID |
 | `StateProcessor` | Drains the queue, validates each request, applies or rejects it |
 
-
 **Relationships:**
 | From | To | Type | Relationship |
 |---|---|---|---|
@@ -53,10 +52,26 @@ it — invalid transitions are logged and skipped without stopping the system.
 | `Order` | `OrderStatus` | Association | has current status |
 | `StateChangeRequest` | `OrderStatus` | Association | requests |
 
-## How to Run
+## How to Run (Core Logic)
 Enter an Order ID (existing or new), then the status you want to move it to.
 Invalid transitions are rejected with a message; valid ones are applied
 immediately. Type `exit` to quit and see final order histories.
+
+## Frontend
+A standalone HTML/CSS/JS demo UI is included at `docs/index.html`, deployed
+live via GitHub Pages. It opens on a role-select screen and branches into
+two views:
+
+| View | Purpose |
+|---|---|
+| Seller / admin | Search any order, push it to its next status, and watch the manifest log update as the queue processes it |
+| Customer | Read-only — search an order and see its current status and delivery timeline, with no ability to change it |
+
+Both views currently share local mock order data within the page (not yet
+wired to the Java backend) — see **Design Notes** below.
+
+**Live demo (GitHub Pages):**
+`https://<username>.github.io/Order_Tracking_System/`
 
 ## Design Notes
 - Rejected transitions don't stop the queue — the system logs and continues
@@ -66,3 +81,17 @@ immediately. Type `exit` to quit and see final order histories.
 - The order store and the queue processor are kept as separate classes
   (rather than one combined class) to follow single-responsibility — storage
   concerns and queue-processing concerns can change independently.
+- The seller and customer roles are intentionally separated in the frontend
+  — a customer should never have access to status-change controls.
+- The frontend currently explores an additional `NOT_DELIVERED` branch state
+  (for a failed delivery attempt) that exists only in the JS demo layer and
+  is not yet part of the core `OrderStatus` enum or transition table — a
+  candidate extension if adopted into the core design.
+
+## Possible Extensions
+- Wrap the core Java classes in a REST API (e.g. Spring Boot) so the
+  frontend talks to a real backend instead of local mock data, keeping both
+  views in sync automatically.
+- Decide whether `NOT_DELIVERED` becomes a real state in the core design,
+  and update the enum, validator, and diagram to match if so.
+- Add authentication so only authorized staff can reach the seller view.
