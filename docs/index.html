@@ -8,23 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0A1420;
-    --panel:#101E30;
-    --panel-2:#16283D;
-    --line:rgba(255,255,255,0.09);
-    --line-strong:rgba(255,255,255,0.16);
-    --text:#E7ECF3;
-    --muted:#8492A6;
-    --muted-2:#5B6A80;
-    --accent:#FF9F43;
-    --accent-soft:rgba(255,159,67,0.14);
-    --ok:#2DD4BF;
-    --ok-soft:rgba(45,212,191,0.14);
-    --danger:#FF5D5D;
-    --danger-soft:rgba(255,93,93,0.14);
-    --display:'Barlow Condensed', sans-serif;
-    --body:'Inter', sans-serif;
-    --mono:'JetBrains Mono', monospace;
+    --bg:#0A1420; --panel:#101E30; --panel-2:#16283D;
+    --line:rgba(255,255,255,0.09); --line-strong:rgba(255,255,255,0.16);
+    --text:#E7ECF3; --muted:#8492A6; --muted-2:#5B6A80;
+    --accent:#FF9F43; --accent-soft:rgba(255,159,67,0.14);
+    --ok:#2DD4BF; --ok-soft:rgba(45,212,191,0.14);
+    --danger:#FF5D5D; --danger-soft:rgba(255,93,93,0.14);
+    --display:'Barlow Condensed', sans-serif; --body:'Inter', sans-serif; --mono:'JetBrains Mono', monospace;
   }
   *{box-sizing:border-box;}
   body{
@@ -33,106 +23,63 @@
       radial-gradient(ellipse at top left, rgba(255,159,67,0.06), transparent 45%),
       radial-gradient(ellipse at bottom right, rgba(45,212,191,0.05), transparent 50%),
       var(--bg);
-    color:var(--text);
-    font-family:var(--body);
-    min-height:100vh;
-    -webkit-font-smoothing:antialiased;
+    color:var(--text); font-family:var(--body); min-height:100vh; -webkit-font-smoothing:antialiased;
   }
   ::selection{background:var(--accent-soft); color:var(--accent);}
+  .hidden{display:none !important;}
 
-  /* ---------- top bar ---------- */
-  .topbar{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:22px 5vw;
-    border-bottom:1px solid var(--line);
-  }
-  .brand{
-    display:flex; align-items:center; gap:10px;
-    font-family:var(--mono); font-size:14px; letter-spacing:0.18em;
-    color:var(--text); text-transform:uppercase;
-  }
+  .topbar{display:flex; align-items:center; justify-content:space-between; padding:22px 5vw; border-bottom:1px solid var(--line);}
+  .brand{display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:14px; letter-spacing:0.18em; color:var(--text); text-transform:uppercase;}
   .brand .dot{width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent);}
   .brand small{color:var(--muted-2); font-weight:400; letter-spacing:0.14em; margin-left:6px;}
-  .top-meta{font-family:var(--mono); font-size:11px; color:var(--muted-2); letter-spacing:0.08em;}
+  .switch-role{font-family:var(--mono); font-size:11px; letter-spacing:0.08em; color:var(--muted-2); background:none; border:1px solid var(--line-strong); padding:7px 14px; border-radius:6px; cursor:pointer;}
+  .switch-role:hover{color:var(--accent); border-color:var(--accent);}
 
-  /* ---------- hero ---------- */
-  .hero{
-    padding:64px 5vw 40px;
-    max-width:1100px;
-  }
-  .eyebrow{
-    font-family:var(--mono); font-size:11px; letter-spacing:0.22em;
-    color:var(--accent); text-transform:uppercase; margin-bottom:14px;
-    display:flex; align-items:center; gap:10px;
-  }
+  #roleScreen{min-height:calc(100vh - 73px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 5vw; text-align:center;}
+  .role-eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:0.22em; color:var(--accent); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:10px;}
+  .role-eyebrow::before, .role-eyebrow::after{content:''; width:24px; height:1px; background:var(--accent);}
+  #roleScreen h1{font-family:var(--display); font-weight:700; font-size:clamp(32px,5vw,52px); margin:0 0 14px; letter-spacing:-0.01em;}
+  #roleScreen .sub{color:var(--muted); font-size:15px; max-width:440px; line-height:1.6; margin-bottom:48px;}
+  .role-cards{display:flex; gap:20px; flex-wrap:wrap; justify-content:center; max-width:680px;}
+  .role-card{width:280px; background:var(--panel); border:1px solid var(--line-strong); border-radius:14px; padding:32px 26px; cursor:pointer; text-align:left; transition:all .2s ease;}
+  .role-card:hover{border-color:var(--accent); transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,0.3);}
+  .role-icon{width:42px; height:42px; border-radius:10px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; margin-bottom:18px; font-size:20px;}
+  .role-card h3{font-family:var(--display); font-weight:600; font-size:22px; margin:0 0 8px; letter-spacing:0.01em;}
+  .role-card p{color:var(--muted); font-size:13px; line-height:1.55; margin:0;}
+  .role-card .go{margin-top:18px; font-family:var(--mono); font-size:11px; color:var(--accent); letter-spacing:0.08em; display:flex; align-items:center; gap:6px;}
+
+  .hero{padding:56px 5vw 36px; max-width:900px; margin:0 auto;}
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:0.22em; color:var(--accent); text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:10px;}
   .eyebrow::before{content:''; width:24px; height:1px; background:var(--accent);}
-  h1{
-    font-family:var(--display); font-weight:700; font-size:clamp(34px,5.2vw,58px);
-    line-height:1.02; margin:0 0 14px; letter-spacing:-0.01em;
-  }
-  h1 span{color:var(--muted-2);}
-  .sub{color:var(--muted); font-size:16px; max-width:520px; line-height:1.55; margin-bottom:34px;}
+  #customerView .eyebrow{justify-content:center;}
+  #customerView .eyebrow::before, #customerView .eyebrow::after{content:''; width:24px; height:1px; background:var(--accent);}
+  h1.page-title{font-family:var(--display); font-weight:700; font-size:clamp(30px,4.6vw,50px); line-height:1.04; margin:0 0 12px; letter-spacing:-0.01em;}
+  #customerView h1.page-title{text-align:center;}
+  p.sub{color:var(--muted); font-size:15px; max-width:480px; line-height:1.55; margin-bottom:30px;}
+  #customerView p.sub{margin:0 auto 30px; text-align:center;}
 
-  .search-row{
-    display:flex; gap:0; max-width:560px;
-    border:1px solid var(--line-strong); border-radius:8px; overflow:hidden;
-    background:var(--panel);
-  }
-  .search-row input{
-    flex:1; background:transparent; border:none; outline:none;
-    padding:16px 18px; color:var(--text); font-family:var(--mono); font-size:14px; letter-spacing:0.04em;
-  }
+  .search-row{display:flex; gap:0; max-width:520px; border:1px solid var(--line-strong); border-radius:8px; overflow:hidden; background:var(--panel);}
+  #customerView .search-row{margin:0 auto;}
+  .search-row input{flex:1; background:transparent; border:none; outline:none; padding:16px 18px; color:var(--text); font-family:var(--mono); font-size:14px; letter-spacing:0.04em;}
   .search-row input::placeholder{color:var(--muted-2);}
-  .search-row button{
-    background:var(--accent); color:#1A1206; border:none; padding:0 26px;
-    font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:0.03em;
-    cursor:pointer; transition:filter .15s ease;
-  }
+  .search-row button{background:var(--accent); color:#1A1206; border:none; padding:0 26px; font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:0.03em; cursor:pointer; transition:filter .15s ease;}
   .search-row button:hover{filter:brightness(1.08);}
   .quick-ids{margin-top:12px; font-family:var(--mono); font-size:12px; color:var(--muted-2);}
-  .quick-ids button{
-    background:none; border:1px solid var(--line-strong); color:var(--muted);
-    font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:5px;
-    margin-left:8px; cursor:pointer; letter-spacing:0.05em;
-  }
+  #customerView .quick-ids{text-align:center;}
+  .quick-ids button{background:none; border:1px solid var(--line-strong); color:var(--muted); font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:5px; margin-left:8px; cursor:pointer; letter-spacing:0.05em;}
   .quick-ids button:hover{color:var(--accent); border-color:var(--accent);}
 
-  /* ---------- main grid ---------- */
-  .stage{padding:10px 5vw 80px; max-width:1100px;}
-  .empty-state{
-    border:1px dashed var(--line-strong); border-radius:10px; padding:48px;
-    color:var(--muted-2); font-family:var(--mono); font-size:13px; text-align:center;
-    letter-spacing:0.04em;
-  }
+  .stage{padding:10px 5vw 80px; max-width:900px; margin:0 auto;}
+  .empty-state{border:1px dashed var(--line-strong); border-radius:10px; padding:48px; color:var(--muted-2); font-family:var(--mono); font-size:13px; text-align:center; letter-spacing:0.04em;}
+  .not-found{border:1px dashed var(--danger); border-radius:10px; padding:40px; display:none; color:var(--danger); font-family:var(--mono); font-size:13px; text-align:center; letter-spacing:0.04em;}
 
-  /* ---------- waybill card ---------- */
-  .waybill{
-    position:relative;
-    background:var(--panel);
-    border:1px solid var(--line-strong);
-    border-radius:14px;
-    overflow:hidden;
-    display:none;
-    animation:rise .45s cubic-bezier(.2,.7,.3,1);
-  }
+  .waybill{position:relative; background:var(--panel); border:1px solid var(--line-strong); border-radius:14px; overflow:hidden; display:none; animation:rise .45s cubic-bezier(.2,.7,.3,1);}
   @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
-
-  .waybill-head{
-    display:flex; justify-content:space-between; align-items:flex-start;
-    padding:26px 28px 22px;
-    border-bottom:1px dashed var(--line-strong);
-  }
+  .waybill-head{display:flex; justify-content:space-between; align-items:flex-start; padding:26px 28px 22px; border-bottom:1px dashed var(--line-strong);}
   .wb-id-label{font-family:var(--mono); font-size:11px; color:var(--muted-2); letter-spacing:0.16em; margin-bottom:6px;}
   .wb-id{font-family:var(--mono); font-size:24px; font-weight:600; letter-spacing:0.05em; color:var(--text);}
-  .wb-status{
-    text-align:right;
-  }
-  .status-pill{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:7px 14px; border-radius:999px;
-    font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:0.03em;
-    border:1px solid; text-transform:uppercase;
-  }
+  .wb-status{text-align:right;}
+  .status-pill{display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:999px; font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:0.03em; border:1px solid; text-transform:uppercase;}
   .status-pill .pulse{width:7px; height:7px; border-radius:50%;}
   .st-active{color:var(--accent); border-color:rgba(255,159,67,0.4); background:var(--accent-soft);}
   .st-active .pulse{background:var(--accent); box-shadow:0 0 8px var(--accent); animation:blink 1.6s infinite;}
@@ -142,167 +89,153 @@
   .st-void .pulse{background:var(--danger);}
   @keyframes blink{0%,100%{opacity:1;} 50%{opacity:0.3;}}
 
-  /* ---------- route rail ---------- */
   .rail-wrap{padding:36px 28px 30px; position:relative;}
-  .rail{
-    display:flex; justify-content:space-between; position:relative;
-  }
-  .rail::before{
-    content:''; position:absolute; top:9px; left:0; right:0; height:2px;
-    background:repeating-linear-gradient(90deg, var(--line-strong) 0 6px, transparent 6px 12px);
-  }
-  .rail-fill{
-    position:absolute; top:9px; left:0; height:2px; background:var(--accent);
-    box-shadow:0 0 8px var(--accent);
-    width:0%; transition:width .6s cubic-bezier(.3,.7,.2,1);
-  }
-  .checkpoint{
-    position:relative; z-index:1; display:flex; flex-direction:column; align-items:center;
-    flex:1;
-  }
-  .cp-dot{
-    width:19px; height:19px; border-radius:50%;
-    background:var(--panel-2); border:2px solid var(--line-strong);
-    display:flex; align-items:center; justify-content:center;
-    transition:all .3s ease;
-  }
+  .rail{display:flex; justify-content:space-between; position:relative;}
+  .rail::before{content:''; position:absolute; top:9px; left:0; right:0; height:2px; background:repeating-linear-gradient(90deg, var(--line-strong) 0 6px, transparent 6px 12px);}
+  .rail-fill{position:absolute; top:9px; left:0; height:2px; background:var(--accent); box-shadow:0 0 8px var(--accent); width:0%; transition:width .6s cubic-bezier(.3,.7,.2,1);}
+  .rail-fill.void{background:var(--danger); box-shadow:0 0 8px var(--danger);}
+  .checkpoint{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; flex:1;}
+  .cp-dot{width:19px; height:19px; border-radius:50%; background:var(--panel-2); border:2px solid var(--line-strong); display:flex; align-items:center; justify-content:center; transition:all .3s ease;}
   .cp-dot svg{width:9px; height:9px; opacity:0; transition:opacity .2s ease;}
   .checkpoint.done .cp-dot{background:var(--ok); border-color:var(--ok);}
   .checkpoint.done .cp-dot svg{opacity:1;}
   .checkpoint.current .cp-dot{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 5px var(--accent-soft);}
-  .cp-label{
-    margin-top:12px; font-family:var(--mono); font-size:10px; letter-spacing:0.08em;
-    color:var(--muted-2); text-transform:uppercase; text-align:center;
-  }
+  .checkpoint.current.void .cp-dot{background:var(--danger); border-color:var(--danger); box-shadow:0 0 0 5px var(--danger-soft);}
+  .cp-label{margin-top:12px; font-family:var(--mono); font-size:10px; letter-spacing:0.08em; color:var(--muted-2); text-transform:uppercase; text-align:center;}
   .checkpoint.done .cp-label, .checkpoint.current .cp-label{color:var(--text);}
 
-  /* void stamp overlay */
-  .stamp{
-    position:absolute; top:38%; left:50%; transform:translate(-50%,-50%) rotate(-14deg);
-    border:3px solid var(--danger); color:var(--danger);
-    font-family:var(--display); font-weight:700; font-size:34px; letter-spacing:0.12em;
-    padding:6px 20px; border-radius:8px; opacity:0; pointer-events:none;
-    text-transform:uppercase; z-index:2;
-    transition:opacity .3s ease, transform .3s ease;
-    background:rgba(10,20,32,0.85);
-  }
+  .stamp{position:absolute; top:38%; left:50%; transform:translate(-50%,-50%) rotate(-14deg); border:3px solid var(--danger); color:var(--danger); font-family:var(--display); font-weight:700; font-size:34px; letter-spacing:0.12em; padding:6px 20px; border-radius:8px; opacity:0; pointer-events:none; text-transform:uppercase; z-index:2; transition:opacity .3s ease, transform .3s ease; background:rgba(10,20,32,0.85);}
   .stamp.show{opacity:0.9; transform:translate(-50%,-50%) rotate(-10deg) scale(1);}
 
-  /* ---------- history + control ---------- */
-  .lower-grid{
-    display:grid; grid-template-columns:1.3fr 1fr; gap:1px; background:var(--line);
-    border-top:1px dashed var(--line-strong);
-  }
+  .lower-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:1px; background:var(--line); border-top:1px dashed var(--line-strong);}
   @media (max-width:720px){.lower-grid{grid-template-columns:1fr;}}
   .panel-block{background:var(--panel); padding:24px 28px;}
-  .panel-title{
-    font-family:var(--mono); font-size:11px; letter-spacing:0.14em; color:var(--muted-2);
-    text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:8px;
-  }
+  .panel-title{font-family:var(--mono); font-size:11px; letter-spacing:0.14em; color:var(--muted-2); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:8px;}
   .panel-title::after{content:''; flex:1; height:1px; background:var(--line);}
-
   .log-list{display:flex; flex-direction:column; gap:10px; max-height:220px; overflow-y:auto;}
-  .log-item{
-    font-family:var(--mono); font-size:12px; display:flex; gap:10px; align-items:baseline;
-    padding-bottom:10px; border-bottom:1px solid var(--line);
-  }
+  .log-item{font-family:var(--mono); font-size:12px; display:flex; gap:10px; align-items:baseline; padding-bottom:10px; border-bottom:1px solid var(--line);}
   .log-item:last-child{border-bottom:none;}
   .log-time{color:var(--muted-2); flex-shrink:0;}
-  .log-ok{color:var(--ok);}
-  .log-bad{color:var(--danger);}
-  .log-text{color:var(--muted);}
+  .log-ok{color:var(--ok);} .log-bad{color:var(--danger);} .log-text{color:var(--muted);} .log-current{color:var(--accent);}
 
   .control-row{display:flex; flex-direction:column; gap:12px;}
-  select{
-    width:100%; background:var(--panel-2); border:1px solid var(--line-strong); color:var(--text);
-    padding:12px 14px; border-radius:7px; font-family:var(--mono); font-size:13px; outline:none;
-    appearance:none; cursor:pointer;
-  }
-  .apply-btn{
-    width:100%; background:transparent; border:1px solid var(--accent); color:var(--accent);
-    padding:13px; border-radius:7px; font-family:var(--display); font-weight:600; font-size:15px;
-    letter-spacing:0.03em; cursor:pointer; transition:all .15s ease;
-  }
+  select{width:100%; background:var(--panel-2); border:1px solid var(--line-strong); color:var(--text); padding:12px 14px; border-radius:7px; font-family:var(--mono); font-size:13px; outline:none; appearance:none; cursor:pointer;}
+  .apply-btn{width:100%; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:13px; border-radius:7px; font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:0.03em; cursor:pointer; transition:all .15s ease;}
   .apply-btn:hover{background:var(--accent); color:#1A1206;}
   .control-hint{font-family:var(--mono); font-size:10.5px; color:var(--muted-2); line-height:1.6; margin-top:2px;}
-
-  .feedback{
-    font-family:var(--mono); font-size:12px; padding:10px 12px; border-radius:6px; display:none;
-    letter-spacing:0.02em;
-  }
+  .feedback{font-family:var(--mono); font-size:12px; padding:10px 12px; border-radius:6px; display:none; letter-spacing:0.02em;}
   .feedback.ok{display:block; background:var(--ok-soft); color:var(--ok); border:1px solid rgba(45,212,191,0.3);}
   .feedback.bad{display:block; background:var(--danger-soft); color:var(--danger); border:1px solid rgba(255,93,93,0.3);}
 
-  .footnote{
-    padding:0 5vw 50px; max-width:1100px; font-family:var(--mono); font-size:11px;
-    color:var(--muted-2); letter-spacing:0.04em; line-height:1.7;
-  }
+  .footnote{padding:0 5vw 50px; max-width:900px; margin:0 auto; font-family:var(--mono); font-size:11px; color:var(--muted-2); letter-spacing:0.04em; line-height:1.7;}
+  #customerView .footnote{text-align:center;}
 </style>
 </head>
 <body>
 
-  <div class="topbar">
-    <div class="brand"><span class="dot"></span>MANIFEST<small>/ order tracking console</small></div>
-    <div class="top-meta">QUEUE · STATE MACHINE DEMO</div>
+  <div id="roleScreen">
+    <div class="role-eyebrow">Order Tracking System</div>
+    <h1>Who's viewing?</h1>
+    <p class="sub">This page works differently depending on who you are — pick one to continue.</p>
+    <div class="role-cards">
+      <div class="role-card" onclick="enterApp('customer')">
+        <div class="role-icon">📦</div>
+        <h3>I'm a customer</h3>
+        <p>Track your order's current status and delivery timeline. Read-only — no controls to change anything.</p>
+        <div class="go">CONTINUE →</div>
+      </div>
+      <div class="role-card" onclick="enterApp('admin')">
+        <div class="role-icon">🛠</div>
+        <h3>I'm the seller</h3>
+        <p>Look up any order, push it to its next status, and view the full manifest log as the queue processes it.</p>
+        <div class="go">CONTINUE →</div>
+      </div>
+    </div>
   </div>
 
-  <div class="hero">
-    <div class="eyebrow">Live tracking</div>
-    <h1>Where's it now, <span>exactly?</span></h1>
-    <p class="sub">Enter a OrderID to pull its current checkpoint and full route history, straight off the processing queue.</p>
-    <div class="search-row">
-      <input id="searchInput" type="text" placeholder="e.g. ORD1" />
-      <button onclick="track()">Track</button>
+  <div id="adminView" class="hidden">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span>MANIFEST<small>/ seller console</small></div>
+      <button class="switch-role" onclick="backToRoleScreen()">← Switch view</button>
     </div>
-    <div class="quick-ids">Try:
-      <button onclick="quickTrack('ORD1')">ORD1</button>
-      <button onclick="quickTrack('ORD2')">ORD2</button>
-      <button onclick="quickTrack('ORD9')">ORD9 (new)</button>
+    <div class="hero">
+      <div class="eyebrow">Live tracking · seller</div>
+      <h1 class="page-title">Where's it now, exactly?</h1>
+      <p class="sub">Enter a consignment ID to pull its current checkpoint and full route history, straight off the processing queue.</p>
+      <div class="search-row">
+        <input id="adminSearchInput" type="text" placeholder="e.g. ORD1" />
+        <button onclick="adminTrack()">Track</button>
+      </div>
+      <div class="quick-ids">Try:
+        <button onclick="adminQuick('ORD1')">ORD1</button>
+        <button onclick="adminQuick('ORD2')">ORD2</button>
+        <button onclick="adminQuick('ORD9')">ORD9 (new)</button>
+      </div>
     </div>
-  </div>
-
-  <div class="stage">
-    <div class="empty-state" id="emptyState">No consignment loaded — search an order ID above to pull its manifest.</div>
-
-    <div class="waybill" id="waybill">
-      <div class="stamp" id="stamp">VOID</div>
-      <div class="waybill-head">
-        <div>
-          <div class="wb-id-label">CONSIGNMENT ID</div>
-          <div class="wb-id" id="wbId">—</div>
+    <div class="stage">
+      <div class="empty-state" id="adminEmptyState">No consignment loaded — search an order ID above to pull its manifest.</div>
+      <div class="waybill" id="adminWaybill">
+        <div class="stamp" id="adminStamp">VOID</div>
+        <div class="waybill-head">
+          <div><div class="wb-id-label">CONSIGNMENT ID</div><div class="wb-id" id="adminWbId">—</div></div>
+          <div class="wb-status"><div class="wb-id-label">CURRENT CHECKPOINT</div><span class="status-pill" id="adminStatusPill"><span class="pulse"></span><span id="adminStatusText">—</span></span></div>
         </div>
-        <div class="wb-status">
-          <div class="wb-id-label">CURRENT CHECKPOINT</div>
-          <span class="status-pill" id="statusPill"><span class="pulse"></span><span id="statusText">—</span></span>
-        </div>
-      </div>
-
-      <div class="rail-wrap">
-        <div class="rail" id="rail">
-          <div class="rail-fill" id="railFill"></div>
-        </div>
-      </div>
-
-      <div class="lower-grid">
-        <div class="panel-block">
-          <div class="panel-title">Manifest log</div>
-          <div class="log-list" id="logList"></div>
-        </div>
-        <div class="panel-block">
-          <div class="panel-title">Update checkpoint</div>
-          <div class="control-row">
-            <select id="statusSelect"></select>
-            <button class="apply-btn" onclick="applyUpdate()">Push status</button>
-            <div class="feedback" id="feedback"></div>
-            <div class="control-hint">Simulates an incoming event on the processing queue — the validator checks it against the transition table before applying.</div>
+        <div class="rail-wrap"><div class="rail" id="adminRail"><div class="rail-fill" id="adminRailFill"></div></div></div>
+        <div class="lower-grid">
+          <div class="panel-block">
+            <div class="panel-title">Manifest log</div>
+            <div class="log-list" id="adminLogList"></div>
+          </div>
+          <div class="panel-block">
+            <div class="panel-title">Update checkpoint</div>
+            <div class="control-row">
+              <select id="adminStatusSelect"></select>
+              <button class="apply-btn" onclick="adminApplyUpdate()">Push status</button>
+              <div class="feedback" id="adminFeedback"></div>
+              <div class="control-hint">Simulates an incoming event on the processing queue — the validator checks it against the transition table before applying.</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="footnote">ROUTE — PLACED → CONFIRMED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED &nbsp;·&nbsp; BRANCHES — CANCELLED (up to Shipped) · NOT_DELIVERED (delivery attempt failed) · RETURNED (after Delivered)</div>
   </div>
 
-  <div class="footnote">
-    ROUTE — PLACED → CONFIRMED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED &nbsp;·&nbsp; BRANCHES — CANCELLED (up to Shipped) / RETURNED (after Delivered)
+  <div id="customerView" class="hidden">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span>MANIFEST<small>/ track your order</small></div>
+      <button class="switch-role" onclick="backToRoleScreen()">← Switch view</button>
+    </div>
+    <div class="hero">
+      <div class="eyebrow">Customer tracking</div>
+      <h1 class="page-title">Where's your order right now?</h1>
+      <p class="sub">Enter your order ID below to see its current checkpoint and full delivery timeline.</p>
+      <div class="search-row">
+        <input id="custSearchInput" type="text" placeholder="Enter your order ID, e.g. ORD1" />
+        <button onclick="custTrack()">Track</button>
+      </div>
+      <div class="quick-ids">Try:
+        <button onclick="custQuick('ORD1')">ORD1</button>
+        <button onclick="custQuick('ORD2')">ORD2</button>
+      </div>
+    </div>
+    <div class="stage">
+      <div class="empty-state" id="custEmptyState">No order loaded — enter your order ID above to see its status.</div>
+      <div class="not-found" id="custNotFound">We couldn't find an order with that ID. Double-check and try again.</div>
+      <div class="waybill" id="custWaybill">
+        <div class="stamp" id="custStamp">VOID</div>
+        <div class="waybill-head">
+          <div><div class="wb-id-label">ORDER ID</div><div class="wb-id" id="custWbId">—</div></div>
+          <div class="wb-status"><div class="wb-id-label">CURRENT STATUS</div><span class="status-pill" id="custStatusPill"><span class="pulse"></span><span id="custStatusText">—</span></span></div>
+        </div>
+        <div class="rail-wrap"><div class="rail" id="custRail"><div class="rail-fill" id="custRailFill"></div></div></div>
+        <div class="panel-block">
+          <div class="panel-title">Delivery timeline</div>
+          <div class="log-list" id="custLogList"></div>
+        </div>
+      </div>
+    </div>
+    <div class="footnote">This is a read-only tracking view — status updates are made by the seller side of the system.</div>
   </div>
 
 <script>
@@ -313,14 +246,9 @@
     CANCELLED:"Cancelled", RETURNED:"Returned"
   };
   const TRANSITIONS = {
-    PLACED:["CONFIRMED","CANCELLED"],
-    CONFIRMED:["SHIPPED","CANCELLED"],
-    SHIPPED:["OUT_FOR_DELIVERY","CANCELLED"],
-    OUT_FOR_DELIVERY:["DELIVERED","NOT_DELIVERED"],
-    NOT_DELIVERED:["RETURNED"],
-    DELIVERED:["RETURNED"],
-    CANCELLED:[],
-    RETURNED:[]
+    PLACED:["CONFIRMED","CANCELLED"], CONFIRMED:["SHIPPED","CANCELLED"],
+    SHIPPED:["OUT_FOR_DELIVERY","CANCELLED"], OUT_FOR_DELIVERY:["DELIVERED","NOT_DELIVERED"],
+    DELIVERED:["RETURNED"], NOT_DELIVERED:["RETURNED"], CANCELLED:[], RETURNED:[]
   };
 
   let orders = {
@@ -332,64 +260,96 @@
     ]}
   };
 
-  let currentId = null;
-
-  function quickTrack(id){ document.getElementById('searchInput').value = id; track(); }
-
-  function track(){
-    const id = document.getElementById('searchInput').value.trim().toUpperCase();
-    if(!id) return;
-    if(!orders[id]){
-      orders[id] = { status:"PLACED", history:[{s:"PLACED", ok:true, note:"Order created on first lookup"}] };
-    }
-    currentId = id;
-    render();
+  // --- BUG FIX: single shared function that correctly computes rail
+  // progress for every status, including branch states like
+  // NOT_DELIVERED, CANCELLED, RETURNED — instead of each render
+  // function guessing separately (which caused the rail to wrongly
+  // reset to 0% for NOT_DELIVERED and for CANCELLED/RETURNED in the
+  // customer view).
+  function getRailInfo(status){
+    if(status === 'DELIVERED')      return { activeIndex: STATES.length - 1, allDone:true,  isVoid:false };
+    if(status === 'RETURNED')       return { activeIndex: STATES.length - 1, allDone:true,  isVoid:true  };
+    if(status === 'NOT_DELIVERED')  return { activeIndex: STATES.indexOf('OUT_FOR_DELIVERY'), allDone:false, isVoid:true };
+    if(status === 'CANCELLED')      return { activeIndex: -1, allDone:false, isVoid:true };
+    const idx = STATES.indexOf(status);
+    return { activeIndex: idx === -1 ? 0 : idx, allDone:false, isVoid:false };
   }
 
-  function render(){
-    const order = orders[currentId];
-    document.getElementById('emptyState').style.display = 'none';
-    const wb = document.getElementById('waybill');
-    wb.style.display = 'block';
-    document.getElementById('wbId').textContent = currentId;
+  function enterApp(role){
+    document.getElementById('roleScreen').classList.add('hidden');
+    if(role === 'admin'){ document.getElementById('adminView').classList.remove('hidden'); }
+    else { document.getElementById('customerView').classList.remove('hidden'); }
+  }
+  function backToRoleScreen(){
+    document.getElementById('adminView').classList.add('hidden');
+    document.getElementById('customerView').classList.add('hidden');
+    document.getElementById('roleScreen').classList.remove('hidden');
+  }
 
-    const pill = document.getElementById('statusPill');
-    const stext = document.getElementById('statusText');
-    const stamp = document.getElementById('stamp');
-    stamp.classList.remove('show');
-
-    pill.className = 'status-pill';
-    if(order.status === 'CANCELLED' || order.status === 'RETURNED'){
-      pill.classList.add('st-void');
-      stamp.textContent = order.status;
-      stamp.classList.add('show');
-    } else if(order.status === 'DELIVERED'){
-      pill.classList.add('st-done');
-    } else {
-      pill.classList.add('st-active');
-    }
-    stext.textContent = LABELS[order.status];
-
-    // rail
-    const rail = document.getElementById('rail');
-    rail.querySelectorAll('.checkpoint').forEach(e=>e.remove());
-    const fill = document.getElementById('railFill');
-    let activeIndex = STATES.indexOf(order.status);
-    if(activeIndex === -1) activeIndex = order.status === 'CANCELLED' || order.status === 'RETURNED' ? STATES.length : 0;
-
+  function renderRail(railEl, fillEl, info){
+    railEl.querySelectorAll('.checkpoint').forEach(e=>e.remove());
     STATES.forEach((s, i)=>{
       const cp = document.createElement('div');
       cp.className = 'checkpoint';
-      if(i < activeIndex || order.status === 'DELIVERED' || order.status === 'RETURNED') cp.classList.add('done');
-      if(i === activeIndex && order.status !== 'CANCELLED') cp.classList.add('current');
+      if(i < info.activeIndex || info.allDone) cp.classList.add('done');
+      if(i === info.activeIndex && !info.allDone){
+        cp.classList.add('current');
+        if(info.isVoid) cp.classList.add('void');
+      }
       cp.innerHTML = `<div class="cp-dot"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="#0A1420" stroke-width="1.6"/></svg></div><div class="cp-label">${LABELS[s]}</div>`;
-      rail.appendChild(cp);
+      railEl.appendChild(cp);
     });
-    const pct = activeIndex <= 0 ? 0 : (activeIndex / (STATES.length-1)) * 100;
-    fill.style.width = (order.status === 'DELIVERED' ? 100 : pct) + '%';
+    let pct;
+    if(info.allDone) pct = 100;
+    else if(info.activeIndex <= 0) pct = 0;
+    else pct = (info.activeIndex / (STATES.length - 1)) * 100;
+    fillEl.style.width = pct + '%';
+    fillEl.classList.toggle('void', info.isVoid);
+  }
 
-    // log
-    const logList = document.getElementById('logList');
+  function setStatusPill(pillEl, textEl, stampEl, order){
+    pillEl.className = 'status-pill';
+    stampEl.classList.remove('show');
+    const info = getRailInfo(order.status);
+    if(info.isVoid){
+      pillEl.classList.add('st-void');
+      stampEl.textContent = order.status;
+      stampEl.classList.add('show');
+    } else if(order.status === 'DELIVERED'){
+      pillEl.classList.add('st-done');
+    } else {
+      pillEl.classList.add('st-active');
+    }
+    textEl.textContent = LABELS[order.status];
+  }
+
+  /* ---------- ADMIN LOGIC ---------- */
+  let adminCurrentId = null;
+  function adminQuick(id){ document.getElementById('adminSearchInput').value = id; adminTrack(); }
+  function adminTrack(){
+    const id = document.getElementById('adminSearchInput').value.trim().toUpperCase();
+    if(!id) return;
+    if(!orders[id]) orders[id] = { status:"PLACED", history:[{s:"PLACED", ok:true, note:"Order created on first lookup"}] };
+    adminCurrentId = id;
+    renderAdmin();
+  }
+  function renderAdmin(){
+    const order = orders[adminCurrentId];
+    document.getElementById('adminEmptyState').style.display = 'none';
+    const wb = document.getElementById('adminWaybill');
+    wb.style.display = 'block';
+    document.getElementById('adminWbId').textContent = adminCurrentId;
+
+    setStatusPill(
+      document.getElementById('adminStatusPill'),
+      document.getElementById('adminStatusText'),
+      document.getElementById('adminStamp'),
+      order
+    );
+
+    renderRail(document.getElementById('adminRail'), document.getElementById('adminRailFill'), getRailInfo(order.status));
+
+    const logList = document.getElementById('adminLogList');
     logList.innerHTML = '';
     order.history.slice().reverse().forEach((h,i)=>{
       const div = document.createElement('div');
@@ -398,18 +358,15 @@
       logList.appendChild(div);
     });
 
-    // select options
-    const sel = document.getElementById('statusSelect');
+    const sel = document.getElementById('adminStatusSelect');
     sel.innerHTML = Object.keys(LABELS).map(s=>`<option value="${s}">${LABELS[s]}</option>`).join('');
-    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('adminFeedback').className = 'feedback';
   }
-
-  function applyUpdate(){
-    const order = orders[currentId];
-    const requested = document.getElementById('statusSelect').value;
-    const fb = document.getElementById('feedback');
+  function adminApplyUpdate(){
+    const order = orders[adminCurrentId];
+    const requested = document.getElementById('adminStatusSelect').value;
+    const fb = document.getElementById('adminFeedback');
     const allowed = TRANSITIONS[order.status] || [];
-
     if(allowed.includes(requested)){
       order.status = requested;
       order.history.push({s:requested, ok:true, note:"Validated & applied"});
@@ -419,18 +376,53 @@
       order.history.push({s:requested, ok:false, note:`Illegal from ${LABELS[order.status]}`});
       fb.textContent = `REJECTED — cannot go ${LABELS[order.status]} → ${LABELS[requested]}`;
       fb.className = 'feedback bad';
-      const wb = document.getElementById('waybill');
+      const wb = document.getElementById('adminWaybill');
       wb.style.animation = 'none';
       requestAnimationFrame(()=>{ wb.style.animation = 'shake .4s ease'; });
     }
-    render();
-    document.getElementById('feedback').className = fb.className;
-    document.getElementById('feedback').textContent = fb.textContent;
+    renderAdmin();
+    document.getElementById('adminFeedback').className = fb.className;
+    document.getElementById('adminFeedback').textContent = fb.textContent;
   }
 
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = `@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}`;
-  document.head.appendChild(styleSheet);
+  /* ---------- CUSTOMER LOGIC ---------- */
+  function custQuick(id){ document.getElementById('custSearchInput').value = id; custTrack(); }
+  function custTrack(){
+    const id = document.getElementById('custSearchInput').value.trim().toUpperCase();
+    if(!id) return;
+    document.getElementById('custNotFound').style.display = 'none';
+    document.getElementById('custEmptyState').style.display = 'none';
+    if(!orders[id]){
+      document.getElementById('custWaybill').style.display = 'none';
+      document.getElementById('custNotFound').style.display = 'block';
+      return;
+    }
+    renderCustomer(orders[id], id);
+  }
+  function renderCustomer(order, id){
+    const wb = document.getElementById('custWaybill');
+    wb.style.display = 'block';
+    document.getElementById('custWbId').textContent = id;
+
+    setStatusPill(
+      document.getElementById('custStatusPill'),
+      document.getElementById('custStatusText'),
+      document.getElementById('custStamp'),
+      order
+    );
+
+    renderRail(document.getElementById('custRail'), document.getElementById('custRailFill'), getRailInfo(order.status));
+
+    const logList = document.getElementById('custLogList');
+    logList.innerHTML = '';
+    order.history.forEach((h,i)=>{
+      const div = document.createElement('div');
+      div.className = 'log-item';
+      const isLast = i === order.history.length - 1;
+      div.innerHTML = `<span class="log-time">STEP ${i+1}</span><span class="${isLast?'log-current':'log-text'}">${LABELS[h.s] || h.s}${h.note?' — '+h.note:''}</span>`;
+      logList.appendChild(div);
+    });
+  }
 </script>
 
 </body>
