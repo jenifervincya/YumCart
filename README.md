@@ -1,7 +1,10 @@
-# E-Commerce Order Tracking System
+# YumCart
 
-A Low-Level Design (LLD) mini project implementing order lifecycle tracking
-using a **Queue** and a **Finite State Machine (FSM)**.
+A food delivery platform being built as a Low-Level Design (LLD) project in
+Java. It started as an order lifecycle tracker using a **Queue** and a
+**Finite State Machine (FSM)**, and is being expanded module by module into
+a full food delivery app (restaurants, cart, delivery assignment, payments,
+notifications).
 
 ## Problem Statement
 An order moves through a fixed set of stages (Placed → Confirmed → Shipped →
@@ -19,20 +22,21 @@ it — invalid transitions are logged and skipped without stopping the system.
   Placed) are rejected.
 
 ## Order States
-`PLACED, CONFIRMED, SHIPPED, OUT_FOR_DELIVERY, DELIVERED, CANCELLED, RETURNED`
+`PLACED, CONFIRMED, SHIPPED, OUT_FOR_DELIVERY, NOT_DELIVERED, DELIVERED, CANCELLED, RETURNED`
 
 ## Transition Rules
 - Placed → Confirmed / Cancelled
 - Confirmed → Shipped / Cancelled
 - Shipped → Out for Delivery / Cancelled
-- Out for Delivery → Delivered
+- Out for Delivery → Delivered / Not Delivered
+- Not Delivered → Out for Delivery / Cancelled
 - Delivered → Returned
 - Cancelled / Returned → (terminal states, no further transitions)
 
 ## Class Diagram
 <img width="1307" height="1195" alt="LLD_Diagram" src="https://github.com/user-attachments/assets/940aeb50-ebdb-49ff-aeb0-254883626081" />
 
-## Classes
+## Core Order Module
 | Class | Responsibility |
 |---|---|
 | `OrderStatus` (enum) | The fixed set of valid order states |
@@ -52,6 +56,17 @@ it — invalid transitions are logged and skipped without stopping the system.
 | `Order` | `OrderStatus` | Association | has current status |
 | `StateChangeRequest` | `OrderStatus` | Association | requests |
 
+## Modules In Progress
+Being layered on top of the core order module, each following the same
+queue/validator/store pattern where it fits:
+- **User** — Customer, RestaurantOwner, DeliveryPartner
+- **Restaurant & Menu** — restaurant profiles, menu items, availability
+- **Cart** — single-restaurant cart, quantities, subtotal
+- **Delivery Assignment** — queue-based nearest-partner matching
+- **Payment** — its own FSM (Pending → Success/Failed → Refunded)
+- **Notification** — Observer pattern hooked into order status changes
+- **Pricing** — Strategy pattern for discounts, tax, delivery fee
+
 ## How to Run (Core Logic)
 Enter an Order ID (existing or new), then the status you want to move it to.
 Invalid transitions are rejected with a message; valid ones are applied
@@ -68,10 +83,9 @@ two views:
 | Customer | Read-only — search an order and see its current status and delivery timeline, with no ability to change it |
 
 Both views currently share local mock order data within the page (not yet
-wired to the Java backend) — see **Design Notes** below.
+wired to the Java backend).
 
-**Live demo (GitHub Pages):**
-[Order_Tracking_System](https://jenifervincya.github.io/Order_Tracking_System/)
+**Live demo:** https://jenifervincya.github.io/YumCart/
 
 ## Design Notes
 - Rejected transitions don't stop the queue — the system logs and continues
@@ -83,7 +97,3 @@ wired to the Java backend) — see **Design Notes** below.
   concerns and queue-processing concerns can change independently.
 - The seller and customer roles are intentionally separated in the frontend
   — a customer should never have access to status-change controls.
-- The frontend currently explores an additional `NOT_DELIVERED` branch state
-  (for a failed delivery attempt) that exists only in the JS demo layer and
-  is not yet part of the core `OrderStatus` enum or transition table — a
-  candidate extension if adopted into the core design.
