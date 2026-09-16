@@ -26,6 +26,11 @@ src/com/yumcart/pricing/DiscountStrategy.java
 src/com/yumcart/pricing/FlatDiscount.java
 src/com/yumcart/pricing/PercentageDiscount.java
 src/com/yumcart/pricing/PricingService.java
+src/com/yumcart/rating/Rating.java
+src/com/yumcart/rating/RatingException.java
+src/com/yumcart/rating/RatingService.java
+src/com/yumcart/rating/RatingStore.java
+src/com/yumcart/rating/RatingTargetType.java
 src/com/yumcart/restaurant/MenuItem.java
 src/com/yumcart/restaurant/Restaurant.java
 src/com/yumcart/restaurant/RestaurantStore.java

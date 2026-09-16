@@ -10,6 +10,10 @@ import com.yumcart.order.*;
 import com.yumcart.payment.*;
 import com.yumcart.pricing.PercentageDiscount;
 import com.yumcart.pricing.PricingService;
+import com.yumcart.rating.Rating;
+import com.yumcart.rating.RatingService;
+import com.yumcart.rating.RatingStore;
+import com.yumcart.rating.RatingTargetType;
 import com.yumcart.restaurant.MenuItem;
 import com.yumcart.restaurant.Restaurant;
 import com.yumcart.restaurant.RestaurantStore;
@@ -37,7 +41,6 @@ public class Main {
         runInteractiveCli(store, validator, processor);
     }
 
-    // Demonstrates restaurant -> cart -> order -> payment -> delivery assignment
     static void runFullOrderFlow(OrderStore orderStore, StateProcessor processor) {
         RestaurantStore restaurantStore = new RestaurantStore();
         Restaurant restaurant = new Restaurant("R1", "Spice Villa", "12 MG Road");
@@ -93,9 +96,28 @@ public class Main {
 
         processor.enqueueRequest(new StateChangeRequest(order.getOrderId(), OrderStatus.SHIPPED));
         processor.processQueue();
+
+        processor.enqueueRequest(new StateChangeRequest(order.getOrderId(), OrderStatus.OUT_FOR_DELIVERY));
+        processor.processQueue();
+
+        processor.enqueueRequest(new StateChangeRequest(order.getOrderId(), OrderStatus.DELIVERED));
+        processor.processQueue();
+
+        // ---- Ratings: only possible now that the order is DELIVERED ----
+        RatingStore ratingStore = new RatingStore();
+        RatingService ratingService = new RatingService(ratingStore);
+
+        Rating restaurantRating = ratingService.rateRestaurant(order, 5, "Great biryani, arrived hot!");
+        Rating partnerRating = ratingService.rateDeliveryPartner(order, partner.getId(), 4, "Quick delivery.");
+
+        System.out.println("[RATED] Restaurant " + order.getRestaurantId() + " -> "
+                + restaurantRating.getStars() + " stars (avg: "
+                + ratingStore.getAverageRating(order.getRestaurantId(), RatingTargetType.RESTAURANT) + ")");
+        System.out.println("[RATED] Partner " + partner.getId() + " -> "
+                + partnerRating.getStars() + " stars (avg: "
+                + ratingStore.getAverageRating(partner.getId(), RatingTargetType.DELIVERY_PARTNER) + ")");
     }
 
-    // ---- Original interactive CLI, unchanged ----
     static void runInteractiveCli(OrderStore store, StateChangeValidator validator, StateProcessor processor) {
         int totalOrders = 1000;
         Random random = new Random();
