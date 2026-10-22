@@ -3,427 +3,679 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YumCart — Order Tracking</title>
+<title>YumCart — Food delivery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0A1420; --panel:#101E30; --panel-2:#16283D;
-    --line:rgba(255,255,255,0.09); --line-strong:rgba(255,255,255,0.16);
-    --text:#E7ECF3; --muted:#8492A6; --muted-2:#5B6A80;
-    --accent:#FF9F43; --accent-soft:rgba(255,159,67,0.14);
-    --ok:#2DD4BF; --ok-soft:rgba(45,212,191,0.14);
-    --danger:#FF5D5D; --danger-soft:rgba(255,93,93,0.14);
-    --display:'Barlow Condensed', sans-serif; --body:'Inter', sans-serif; --mono:'JetBrains Mono', monospace;
+    --orange:#FC8019; --orange-d:#E5700F; --ink:#282C3F; --ink2:#686B78; --ink3:#93959F;
+    --bg:#F1F1F6; --card:#fff; --line:#E9E9EB; --green:#1BA672; --green-l:#E7F6F0; --red:#E23744; --red-l:#FDECEE;
   }
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(ellipse at top left, rgba(255,159,67,0.06), transparent 45%),
-      radial-gradient(ellipse at bottom right, rgba(45,212,191,0.05), transparent 50%),
-      var(--bg);
-    color:var(--text); font-family:var(--body); min-height:100vh; -webkit-font-smoothing:antialiased;
-  }
-  ::selection{background:var(--accent-soft); color:var(--accent);}
+  html{scroll-behavior:smooth;}
+  body{margin:0; font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased;}
+  button{font-family:inherit; cursor:pointer;}
   .hidden{display:none !important;}
 
-  .topbar{display:flex; align-items:center; justify-content:space-between; padding:22px 5vw; border-bottom:1px solid var(--line);}
-  .brand{display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:14px; letter-spacing:0.18em; color:var(--text); text-transform:uppercase;}
-  .brand .dot{width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 10px var(--accent);}
-  .brand small{color:var(--muted-2); font-weight:400; letter-spacing:0.14em; margin-left:6px;}
-  .switch-role{font-family:var(--mono); font-size:11px; letter-spacing:0.08em; color:var(--muted-2); background:none; border:1px solid var(--line-strong); padding:7px 14px; border-radius:6px; cursor:pointer;}
-  .switch-role:hover{color:var(--accent); border-color:var(--accent);}
+  /* header */
+  .hdr{position:sticky; top:0; z-index:50; background:#fff; box-shadow:0 2px 8px rgba(40,44,63,.08);}
+  .hdr-in{max-width:1180px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between;}
+  .logo{font-weight:800; font-size:24px; color:var(--ink); cursor:pointer; letter-spacing:-.02em; display:flex; align-items:center; gap:8px;}
+  .logo span{color:var(--orange);}
+  .hdr-actions{display:flex; gap:10px;}
+  .hbtn{background:#fff; border:1px solid var(--line); color:var(--ink); font-weight:600; font-size:14px; padding:10px 16px; border-radius:10px; display:flex; align-items:center; gap:8px; transition:all .15s;}
+  .hbtn:hover{border-color:var(--orange); color:var(--orange);}
+  .badge{background:var(--orange); color:#fff; border-radius:999px; font-size:11px; font-weight:700; min-width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; padding:0 6px;}
+  .badge.zero{background:var(--ink3);}
 
-  #roleScreen{min-height:calc(100vh - 73px); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 5vw; text-align:center;}
-  .role-eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:0.22em; color:var(--accent); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:10px;}
-  .role-eyebrow::before, .role-eyebrow::after{content:''; width:24px; height:1px; background:var(--accent);}
-  #roleScreen h1{font-family:var(--display); font-weight:700; font-size:clamp(32px,5vw,52px); margin:0 0 14px; letter-spacing:-0.01em;}
-  #roleScreen .sub{color:var(--muted); font-size:15px; max-width:440px; line-height:1.6; margin-bottom:48px;}
-  .role-cards{display:flex; gap:20px; flex-wrap:wrap; justify-content:center; max-width:680px;}
-  .role-card{width:280px; background:var(--panel); border:1px solid var(--line-strong); border-radius:14px; padding:32px 26px; cursor:pointer; text-align:left; transition:all .2s ease;}
-  .role-card:hover{border-color:var(--accent); transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,0.3);}
-  .role-icon{width:42px; height:42px; border-radius:10px; background:var(--accent-soft); color:var(--accent); display:flex; align-items:center; justify-content:center; margin-bottom:18px; font-size:20px;}
-  .role-card h3{font-family:var(--display); font-weight:600; font-size:22px; margin:0 0 8px; letter-spacing:0.01em;}
-  .role-card p{color:var(--muted); font-size:13px; line-height:1.55; margin:0;}
-  .role-card .go{margin-top:18px; font-family:var(--mono); font-size:11px; color:var(--accent); letter-spacing:0.08em; display:flex; align-items:center; gap:6px;}
+  .api-error{max-width:1180px; margin:16px auto 0; padding:14px 18px; background:var(--red-l); color:var(--red); border-radius:10px; font-weight:500; font-size:14px; line-height:1.6;}
+  .api-error code{background:#fff; padding:2px 6px; border-radius:4px;}
 
-  .hero{padding:56px 5vw 36px; max-width:900px; margin:0 auto;}
-  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:0.22em; color:var(--accent); text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:10px;}
-  .eyebrow::before{content:''; width:24px; height:1px; background:var(--accent);}
-  #customerView .eyebrow{justify-content:center;}
-  #customerView .eyebrow::before, #customerView .eyebrow::after{content:''; width:24px; height:1px; background:var(--accent);}
-  h1.page-title{font-family:var(--display); font-weight:700; font-size:clamp(30px,4.6vw,50px); line-height:1.04; margin:0 0 12px; letter-spacing:-0.01em;}
-  #customerView h1.page-title{text-align:center;}
-  p.sub{color:var(--muted); font-size:15px; max-width:480px; line-height:1.55; margin-bottom:30px;}
-  #customerView p.sub{margin:0 auto 30px; text-align:center;}
+  main{max-width:1180px; margin:0 auto; padding:0 20px 120px;}
 
-  .search-row{display:flex; gap:0; max-width:520px; border:1px solid var(--line-strong); border-radius:8px; overflow:hidden; background:var(--panel);}
-  #customerView .search-row{margin:0 auto;}
-  .search-row input{flex:1; background:transparent; border:none; outline:none; padding:16px 18px; color:var(--text); font-family:var(--mono); font-size:14px; letter-spacing:0.04em;}
-  .search-row input::placeholder{color:var(--muted-2);}
-  .search-row button{background:var(--accent); color:#1A1206; border:none; padding:0 26px; font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:0.03em; cursor:pointer; transition:filter .15s ease;}
-  .search-row button:hover{filter:brightness(1.08);}
-  .quick-ids{margin-top:12px; font-family:var(--mono); font-size:12px; color:var(--muted-2);}
-  #customerView .quick-ids{text-align:center;}
-  .quick-ids button{background:none; border:1px solid var(--line-strong); color:var(--muted); font-family:var(--mono); font-size:11px; padding:5px 10px; border-radius:5px; margin-left:8px; cursor:pointer; letter-spacing:0.05em;}
-  .quick-ids button:hover{color:var(--accent); border-color:var(--accent);}
+  /* hero */
+  .hero{margin-top:20px; border-radius:20px; padding:48px 40px; color:#fff; position:relative; overflow:hidden; background:linear-gradient(120deg,#FC8019 0%,#FF5E62 100%);}
+  .hero h1{margin:0 0 8px; font-size:clamp(26px,4vw,40px); font-weight:800; letter-spacing:-.02em; max-width:560px; line-height:1.15;}
+  .hero p{margin:0 0 24px; font-size:16px; opacity:.92; max-width:480px;}
+  .hero .emoji-bg{position:absolute; right:30px; top:50%; transform:translateY(-50%); font-size:130px; opacity:.25; letter-spacing:10px; pointer-events:none; white-space:nowrap;}
+  .searchbox{display:flex; background:#fff; border-radius:12px; overflow:hidden; max-width:560px; box-shadow:0 8px 24px rgba(0,0,0,.18);}
+  .searchbox input{flex:1; border:none; outline:none; padding:16px 18px; font-size:15px; font-family:inherit; color:var(--ink);}
+  .searchbox .sicon{display:flex; align-items:center; padding-left:16px; color:var(--ink3); font-size:18px;}
+  .coupon-strip{display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;}
+  .cp-chip{background:rgba(255,255,255,.18); border:1px dashed rgba(255,255,255,.7); border-radius:10px; padding:8px 14px; font-size:13px; font-weight:600;}
 
-  .stage{padding:10px 5vw 80px; max-width:900px; margin:0 auto;}
-  .empty-state{border:1px dashed var(--line-strong); border-radius:10px; padding:48px; color:var(--muted-2); font-family:var(--mono); font-size:13px; text-align:center; letter-spacing:0.04em;}
-  .not-found{border:1px dashed var(--danger); border-radius:10px; padding:40px; display:none; color:var(--danger); font-family:var(--mono); font-size:13px; text-align:center; letter-spacing:0.04em;}
+  .section-title{font-size:22px; font-weight:800; margin:34px 0 14px; letter-spacing:-.01em;}
+  .chips{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;}
+  .chip{background:#fff; border:1px solid var(--line); color:var(--ink); padding:9px 16px; border-radius:999px; font-size:14px; font-weight:500; transition:all .15s;}
+  .chip:hover{border-color:var(--ink3);}
+  .chip.on{background:var(--ink); color:#fff; border-color:var(--ink);}
 
-  .waybill{position:relative; background:var(--panel); border:1px solid var(--line-strong); border-radius:14px; overflow:hidden; display:none; animation:rise .45s cubic-bezier(.2,.7,.3,1);}
-  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
-  .waybill-head{display:flex; justify-content:space-between; align-items:flex-start; padding:26px 28px 22px; border-bottom:1px dashed var(--line-strong);}
-  .wb-id-label{font-family:var(--mono); font-size:11px; color:var(--muted-2); letter-spacing:0.16em; margin-bottom:6px;}
-  .wb-id{font-family:var(--mono); font-size:24px; font-weight:600; letter-spacing:0.05em; color:var(--text);}
-  .wb-status{text-align:right;}
-  .status-pill{display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:999px; font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:0.03em; border:1px solid; text-transform:uppercase;}
-  .status-pill .pulse{width:7px; height:7px; border-radius:50%;}
-  .st-active{color:var(--accent); border-color:rgba(255,159,67,0.4); background:var(--accent-soft);}
-  .st-active .pulse{background:var(--accent); box-shadow:0 0 8px var(--accent); animation:blink 1.6s infinite;}
-  .st-done{color:var(--ok); border-color:rgba(45,212,191,0.4); background:var(--ok-soft);}
-  .st-done .pulse{background:var(--ok);}
-  .st-void{color:var(--danger); border-color:rgba(255,93,93,0.4); background:var(--danger-soft);}
-  .st-void .pulse{background:var(--danger);}
-  @keyframes blink{0%,100%{opacity:1;} 50%{opacity:0.3;}}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:26px 22px;}
+  .rcard{cursor:pointer; transition:transform .18s;}
+  .rcard:hover{transform:scale(.98);}
+  .rcard.closed{opacity:.55; filter:grayscale(.6);}
+  .rbanner{height:170px; border-radius:18px; position:relative; display:flex; align-items:center; justify-content:center; font-size:82px; overflow:hidden;}
+  .rbanner::after{content:''; position:absolute; inset:auto 0 0 0; height:70px; background:linear-gradient(transparent,rgba(0,0,0,.65));}
+  .roffer{position:absolute; left:14px; bottom:10px; z-index:2; color:#fff; font-weight:800; font-size:16px; letter-spacing:-.01em;}
+  .rinfo{padding:12px 4px 0;}
+  .rname{font-size:18px; font-weight:700; margin:0 0 3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .rmeta{display:flex; align-items:center; gap:6px; font-weight:600; font-size:15px;}
+  .star{display:inline-flex; align-items:center; justify-content:center; background:var(--green); color:#fff; border-radius:50%; width:20px; height:20px; font-size:11px;}
+  .star.new{background:var(--ink3);}
+  .rsub{color:var(--ink2); font-size:14px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .empty{background:#fff; border-radius:14px; padding:50px; text-align:center; color:var(--ink2);}
 
-  .rail-wrap{padding:36px 28px 30px; position:relative;}
-  .rail{display:flex; justify-content:space-between; position:relative;}
-  .rail::before{content:''; position:absolute; top:9px; left:0; right:0; height:2px; background:repeating-linear-gradient(90deg, var(--line-strong) 0 6px, transparent 6px 12px);}
-  .rail-fill{position:absolute; top:9px; left:0; height:2px; background:var(--accent); box-shadow:0 0 8px var(--accent); width:0%; transition:width .6s cubic-bezier(.3,.7,.2,1);}
-  .rail-fill.void{background:var(--danger); box-shadow:0 0 8px var(--danger);}
-  .checkpoint{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; flex:1;}
-  .cp-dot{width:19px; height:19px; border-radius:50%; background:var(--panel-2); border:2px solid var(--line-strong); display:flex; align-items:center; justify-content:center; transition:all .3s ease;}
-  .cp-dot svg{width:9px; height:9px; opacity:0; transition:opacity .2s ease;}
-  .checkpoint.done .cp-dot{background:var(--ok); border-color:var(--ok);}
-  .checkpoint.done .cp-dot svg{opacity:1;}
-  .checkpoint.current .cp-dot{background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 5px var(--accent-soft);}
-  .checkpoint.current.void .cp-dot{background:var(--danger); border-color:var(--danger); box-shadow:0 0 0 5px var(--danger-soft);}
-  .cp-label{margin-top:12px; font-family:var(--mono); font-size:10px; letter-spacing:0.08em; color:var(--muted-2); text-transform:uppercase; text-align:center;}
-  .checkpoint.done .cp-label, .checkpoint.current .cp-label{color:var(--text);}
+  /* restaurant page */
+  .back{background:none; border:none; color:var(--ink2); font-weight:600; font-size:14px; padding:20px 0 6px;}
+  .back:hover{color:var(--orange);}
+  .rhead{background:#fff; border-radius:18px; padding:24px 28px; display:flex; gap:22px; align-items:center; box-shadow:0 2px 10px rgba(40,44,63,.05);}
+  .rhead .big{width:110px; height:110px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:58px; flex-shrink:0;}
+  .rhead h2{margin:0 0 6px; font-size:28px; font-weight:800; letter-spacing:-.02em;}
+  .rhead .sub{color:var(--ink2); font-size:14px; margin-bottom:10px;}
+  .pills{display:flex; gap:10px; flex-wrap:wrap;}
+  .pill{background:var(--bg); border-radius:999px; padding:6px 12px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px;}
+  .pill.green{background:var(--green-l); color:var(--green);}
+  .offers{display:flex; gap:12px; margin:18px 0 6px; flex-wrap:wrap;}
+  .offer{background:#fff; border:1px dashed var(--orange); border-radius:12px; padding:10px 16px; font-size:13px; color:var(--ink2);}
+  .offer b{color:var(--orange); display:block; font-size:14px;}
+  .menu-cat{font-size:19px; font-weight:800; margin:30px 0 4px;}
+  .dish{background:#fff; display:flex; justify-content:space-between; gap:20px; padding:22px 24px; border-bottom:1px solid var(--line);}
+  .dish:first-of-type{border-top-left-radius:16px; border-top-right-radius:16px;}
+  .dish:last-of-type{border-bottom-left-radius:16px; border-bottom-right-radius:16px; border-bottom:none;}
+  .dish-l{flex:1;}
+  .dish-l h4{margin:0 0 4px; font-size:16px; font-weight:700;}
+  .dish-l .price{font-size:15px; font-weight:600;}
+  .dish-l .cat{display:inline-block; margin-top:8px; font-size:12px; color:var(--ink3); font-weight:500;}
+  .dish-r{position:relative; width:130px; height:112px; flex-shrink:0;}
+  .dish-img{width:130px; height:112px; border-radius:14px; background:linear-gradient(135deg,#FFF1E3,#FFD9B3); display:flex; align-items:center; justify-content:center; font-size:56px;}
+  .add-btn, .dish-r .stepper{position:absolute; left:50%; bottom:-14px; transform:translateX(-50%);}
+  .add-btn{width:96px; height:36px; background:#fff; color:var(--green); border:1px solid var(--line); border-radius:8px; font-weight:800; font-size:14px; letter-spacing:.04em; box-shadow:0 3px 8px rgba(40,44,63,.15);}
+  .add-btn:hover{background:var(--green-l);}
+  .add-btn:disabled{color:var(--ink3); cursor:not-allowed;}
+  .stepper{display:inline-flex; align-items:center; background:#fff; border:1px solid var(--line); border-radius:8px; height:36px; box-shadow:0 3px 8px rgba(40,44,63,.15); overflow:hidden;}
+  .stepper button{width:32px; height:100%; border:none; background:none; color:var(--green); font-size:20px; font-weight:700;}
+  .stepper button:hover{background:var(--green-l);}
+  .stepper span{min-width:28px; text-align:center; font-weight:800; font-size:14px; color:var(--green);}
 
-  .stamp{position:absolute; top:38%; left:50%; transform:translate(-50%,-50%) rotate(-14deg); border:3px solid var(--danger); color:var(--danger); font-family:var(--display); font-weight:700; font-size:34px; letter-spacing:0.12em; padding:6px 20px; border-radius:8px; opacity:0; pointer-events:none; text-transform:uppercase; z-index:2; transition:opacity .3s ease, transform .3s ease; background:rgba(10,20,32,0.85);}
-  .stamp.show{opacity:0.9; transform:translate(-50%,-50%) rotate(-10deg) scale(1);}
+  /* cart bar + drawer */
+  #cartBar{position:fixed; left:50%; bottom:20px; transform:translateX(-50%); width:min(760px,calc(100% - 32px)); background:var(--green); color:#fff; border-radius:14px; padding:16px 22px; display:flex; justify-content:space-between; align-items:center; font-weight:700; box-shadow:0 10px 30px rgba(27,166,114,.45); cursor:pointer; z-index:40;}
+  #cartBar small{font-weight:500; opacity:.9; display:block;}
+  #overlay{position:fixed; inset:0; background:rgba(40,44,63,.55); opacity:0; pointer-events:none; transition:opacity .25s; z-index:60;}
+  #overlay.open{opacity:1; pointer-events:auto;}
+  #drawer{position:fixed; top:0; right:0; bottom:0; width:min(430px,100vw); background:var(--bg); z-index:70; transform:translateX(100%); transition:transform .3s cubic-bezier(.2,.8,.2,1); display:flex; flex-direction:column;}
+  #drawer.open{transform:none;}
+  .dr-head{background:#fff; padding:18px 22px; display:flex; justify-content:space-between; align-items:center; font-weight:800; font-size:18px; box-shadow:0 2px 8px rgba(40,44,63,.06);}
+  .dr-head button{border:none; background:var(--bg); width:34px; height:34px; border-radius:50%; font-size:16px;}
+  #drawerBody{flex:1; overflow-y:auto; padding:16px;}
+  #drawerFoot{background:#fff; padding:14px 18px; box-shadow:0 -4px 14px rgba(40,44,63,.08);}
+  .place-btn{width:100%; background:var(--green); color:#fff; border:none; border-radius:12px; padding:16px; font-size:16px; font-weight:800; display:flex; justify-content:space-between;}
+  .place-btn:disabled{opacity:.6; cursor:wait;}
+  .box{background:#fff; border-radius:14px; padding:16px 18px; margin-bottom:14px;}
+  .cart-rest{font-weight:800; font-size:16px;}
+  .cart-rest small{display:block; font-weight:500; color:var(--ink2); font-size:13px; margin-top:2px;}
+  .cart-line{display:flex; align-items:center; gap:10px; padding:12px 0 0;}
+  .cl-name{flex:1; font-size:14px; font-weight:600;}
+  .cl-price{min-width:64px; text-align:right; font-size:14px; font-weight:600;}
+  .cart-line .stepper{position:static; transform:none; box-shadow:none; height:32px;}
+  .cart-line .stepper button{width:28px;}
+  .coupon-row{display:flex; gap:8px; margin-top:6px;}
+  .coupon-row input{flex:1; border:1px solid var(--line); border-radius:8px; padding:11px 12px; font-size:14px; font-family:inherit; text-transform:uppercase; outline:none;}
+  .coupon-row input:focus{border-color:var(--orange);}
+  .coupon-row button{background:var(--ink); color:#fff; border:none; border-radius:8px; padding:0 18px; font-weight:700;}
+  .coupon-hint{font-size:12px; color:var(--ink3); margin-top:8px;}
+  .coupon-on{display:flex; justify-content:space-between; align-items:center; background:var(--green-l); color:var(--green); padding:10px 12px; border-radius:8px; font-weight:700; font-size:14px;}
+  .coupon-on button{background:none; border:none; color:var(--red); font-weight:700; font-size:13px;}
+  .box h5{margin:0 0 10px; font-size:13px; letter-spacing:.08em; color:var(--ink2); text-transform:uppercase;}
+  .bill-row{display:flex; justify-content:space-between; font-size:14px; color:var(--ink2); padding:5px 0;}
+  .bill-row.disc{color:var(--green);}
+  .bill-row.total{border-top:1px solid var(--ink); margin-top:8px; padding-top:12px; color:var(--ink); font-weight:800; font-size:16px;}
+  .pay-opt{display:flex; align-items:center; gap:12px; padding:11px 12px; border:1px solid var(--line); border-radius:10px; margin-bottom:8px; cursor:pointer; font-size:14px; font-weight:600;}
+  .pay-opt.on{border-color:var(--orange); background:#FFF6EC;}
+  .pay-opt input{accent-color:var(--orange);}
+  .empty-cart{text-align:center; padding:70px 20px; color:var(--ink2);}
+  .empty-cart .big{font-size:70px; margin-bottom:10px;}
+  .empty-cart h3{color:var(--ink); margin:0 0 6px;}
 
-  .lower-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:1px; background:var(--line); border-top:1px dashed var(--line-strong);}
-  @media (max-width:720px){.lower-grid{grid-template-columns:1fr;}}
-  .panel-block{background:var(--panel); padding:24px 28px;}
-  .panel-title{font-family:var(--mono); font-size:11px; letter-spacing:0.14em; color:var(--muted-2); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:8px;}
-  .panel-title::after{content:''; flex:1; height:1px; background:var(--line);}
-  .log-list{display:flex; flex-direction:column; gap:10px; max-height:220px; overflow-y:auto;}
-  .log-item{font-family:var(--mono); font-size:12px; display:flex; gap:10px; align-items:baseline; padding-bottom:10px; border-bottom:1px solid var(--line);}
-  .log-item:last-child{border-bottom:none;}
-  .log-time{color:var(--muted-2); flex-shrink:0;}
-  .log-ok{color:var(--ok);} .log-bad{color:var(--danger);} .log-text{color:var(--muted);} .log-current{color:var(--accent);}
+  /* tracking */
+  .track-search{display:flex; gap:10px; max-width:460px; margin:6px 0 22px;}
+  .track-search input{flex:1; border:1px solid var(--line); background:#fff; border-radius:10px; padding:12px 14px; font-size:15px; font-family:inherit; outline:none; text-transform:uppercase;}
+  .track-search input:focus{border-color:var(--orange);}
+  .track-search button{background:var(--orange); border:none; color:#fff; font-weight:700; padding:0 22px; border-radius:10px;}
+  .tcard{background:#fff; border-radius:18px; padding:26px 28px; margin-bottom:16px; box-shadow:0 2px 10px rgba(40,44,63,.05);}
+  .t-top{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; align-items:flex-start;}
+  .t-id{font-size:13px; color:var(--ink3); font-weight:600; letter-spacing:.06em;}
+  .t-msg{font-size:26px; font-weight:800; margin:6px 0 4px; letter-spacing:-.02em;}
+  .t-sub{color:var(--ink2); font-size:14px;}
+  .t-badge{padding:8px 16px; border-radius:999px; font-weight:800; font-size:13px; letter-spacing:.05em; text-transform:uppercase;}
+  .t-badge.active{background:#FFF1E3; color:var(--orange-d);}
+  .t-badge.done{background:var(--green-l); color:var(--green);}
+  .t-badge.void{background:var(--red-l); color:var(--red);}
+  .rail{display:flex; margin-top:30px;}
+  .step{flex:1; position:relative; text-align:center;}
+  .step::before{content:''; position:absolute; top:15px; left:-50%; width:100%; height:3px; background:var(--line);}
+  .step:first-child::before{display:none;}
+  .step.done::before,.step.current::before{background:var(--green);}
+  .step.void::before{background:var(--red);}
+  .dot{position:relative; z-index:1; width:32px; height:32px; margin:0 auto; border-radius:50%; background:#fff; border:3px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:var(--ink3);}
+  .step.done .dot{background:var(--green); border-color:var(--green); color:#fff;}
+  .step.current .dot{border-color:var(--orange); color:var(--orange); box-shadow:0 0 0 6px rgba(252,128,25,.16); animation:pulse 1.6s infinite;}
+  .step.void .dot{border-color:var(--red); color:var(--red); background:var(--red-l);}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(252,128,25,.22);} 50%{box-shadow:0 0 0 9px rgba(252,128,25,.06);}}
+  .slabel{margin-top:10px; font-size:12px; font-weight:600; color:var(--ink2);}
+  .step.done .slabel,.step.current .slabel{color:var(--ink);}
+  .t-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:720px){.t-grid{grid-template-columns:1fr;} .hero{padding:32px 22px;} .hero .emoji-bg{display:none;} .dish-r{width:110px;} .dish-img{width:110px;}}
+  .t-line{display:flex; justify-content:space-between; font-size:14px; padding:6px 0; color:var(--ink2);}
+  .t-line b{color:var(--ink);}
+  .t-line.total{border-top:1px solid var(--line); margin-top:8px; padding-top:12px; font-weight:800; color:var(--ink); font-size:16px;}
+  .rider{display:flex; align-items:center; gap:12px; background:var(--bg); border-radius:12px; padding:12px 14px; margin-bottom:10px;}
+  .rider .av{width:42px; height:42px; border-radius:50%; background:var(--orange); display:flex; align-items:center; justify-content:center; font-size:22px;}
+  .demo-title{font-size:12px; letter-spacing:.08em; color:var(--ink3); font-weight:700; text-transform:uppercase; margin-bottom:4px;}
+  .demo-sub{font-size:13px; color:var(--ink2); margin-bottom:12px;}
+  .demo-btns{display:flex; gap:8px; flex-wrap:wrap;}
+  .demo-btns button{background:#fff; border:1px solid var(--orange); color:var(--orange-d); font-weight:700; font-size:13px; padding:9px 14px; border-radius:8px;}
+  .demo-btns button:hover{background:var(--orange); color:#fff;}
+  .demo-btns button.danger{border-color:var(--red); color:var(--red);}
+  .demo-btns button.danger:hover{background:var(--red); color:#fff;}
 
-  .control-row{display:flex; flex-direction:column; gap:12px;}
-  select{width:100%; background:var(--panel-2); border:1px solid var(--line-strong); color:var(--text); padding:12px 14px; border-radius:7px; font-family:var(--mono); font-size:13px; outline:none; appearance:none; cursor:pointer;}
-  .apply-btn{width:100%; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:13px; border-radius:7px; font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:0.03em; cursor:pointer; transition:all .15s ease;}
-  .apply-btn:hover{background:var(--accent); color:#1A1206;}
-  .control-hint{font-family:var(--mono); font-size:10.5px; color:var(--muted-2); line-height:1.6; margin-top:2px;}
-  .feedback{font-family:var(--mono); font-size:12px; padding:10px 12px; border-radius:6px; display:none; letter-spacing:0.02em;}
-  .feedback.ok{display:block; background:var(--ok-soft); color:var(--ok); border:1px solid rgba(45,212,191,0.3);}
-  .feedback.bad{display:block; background:var(--danger-soft); color:var(--danger); border:1px solid rgba(255,93,93,0.3);}
-
-  .footnote{padding:0 5vw 50px; max-width:900px; margin:0 auto; font-family:var(--mono); font-size:11px; color:var(--muted-2); letter-spacing:0.04em; line-height:1.7;}
-  #customerView .footnote{text-align:center;}
+  #toast{position:fixed; top:84px; left:50%; transform:translate(-50%,-20px); background:var(--ink); color:#fff; padding:12px 20px; border-radius:10px; font-weight:600; font-size:14px; opacity:0; pointer-events:none; transition:all .25s; z-index:100; max-width:90vw;}
+  #toast.show{opacity:1; transform:translate(-50%,0);}
+  #toast.error{background:var(--red);}
 </style>
 </head>
 <body>
 
-  <div id="roleScreen">
-    <div class="role-eyebrow">YumCart</div>
-    <h1>Who's viewing?</h1>
-    <p class="sub">This page works differently depending on who you are — pick one to continue.</p>
-    <div class="role-cards">
-      <div class="role-card" onclick="enterApp('customer')">
-        <div class="role-icon">📦</div>
-        <h3>I'm a customer</h3>
-        <p>Track your order's current status and delivery timeline. Read-only — no controls to change anything.</p>
-        <div class="go">CONTINUE →</div>
-      </div>
-      <div class="role-card" onclick="enterApp('admin')">
-        <div class="role-icon">🛠</div>
-        <h3>I'm the seller</h3>
-        <p>Look up any order, push it to its next status, and view the full manifest log as the queue processes it.</p>
-        <div class="go">CONTINUE →</div>
-      </div>
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="logo" onclick="goHome()">🍽️ <div><span>Yum</span>Cart</div></div>
+    <div class="hdr-actions">
+      <button class="hbtn" onclick="openTrack()">📍 Track order</button>
+      <button class="hbtn" onclick="openCart()">🛒 Cart <span class="badge zero" id="cartBadge">0</span></button>
     </div>
   </div>
+</header>
 
-  <div id="adminView" class="hidden">
-    <div class="topbar">
-      <div class="brand"><span class="dot"></span>YUMCART<small>/ seller console</small></div>
-      <button class="switch-role" onclick="backToRoleScreen()">← Switch view</button>
-    </div>
-    <div class="hero">
-      <div class="eyebrow">Live tracking · seller</div>
-      <h1 class="page-title">Where's it now, exactly?</h1>
-      <p class="sub">Enter a consignment ID to pull its current checkpoint and full route history, straight off the processing queue.</p>
-      <div class="search-row">
-        <input id="adminSearchInput" type="text" placeholder="e.g. 1001 (Try any 4-digit number)" />
-        <button onclick="adminTrack()">Track</button>
-      </div>
-      <div class="quick-ids">Try:
-        <button onclick="adminQuick('2389')">2389</button>
-        <button onclick="adminQuick('9810')">9810</button>
-        <button onclick="adminQuick('4761')">4761 (new)</button>
-      </div>
-    </div>
-    <div class="stage">
-      <div class="empty-state" id="adminEmptyState">No consignment loaded — search an order ID above to pull its manifest.</div>
-      <div class="waybill" id="adminWaybill">
-        <div class="stamp" id="adminStamp">VOID</div>
-        <div class="waybill-head">
-          <div><div class="wb-id-label">CONSIGNMENT ID</div><div class="wb-id" id="adminWbId">—</div></div>
-          <div class="wb-status"><div class="wb-id-label">CURRENT CHECKPOINT</div><span class="status-pill" id="adminStatusPill"><span class="pulse"></span><span id="adminStatusText">—</span></span></div>
-        </div>
-        <div class="rail-wrap"><div class="rail" id="adminRail"><div class="rail-fill" id="adminRailFill"></div></div></div>
-        <div class="lower-grid">
-          <div class="panel-block">
-            <div class="panel-title">Manifest log</div>
-            <div class="log-list" id="adminLogList"></div>
-          </div>
-          <div class="panel-block">
-            <div class="panel-title">Update checkpoint</div>
-            <div class="control-row">
-              <select id="adminStatusSelect"></select>
-              <button class="apply-btn" onclick="adminApplyUpdate()">Push status</button>
-              <div class="feedback" id="adminFeedback"></div>
-              <div class="control-hint">Simulates an incoming event on the processing queue — the validator checks it against the transition table before applying.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="footnote">ROUTE — PLACED → CONFIRMED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED &nbsp;·&nbsp; BRANCHES — CANCELLED (up to Shipped) · NOT_DELIVERED (delivery attempt failed) · RETURNED (after Delivered)</div>
-  </div>
+<div id="apiError" class="api-error hidden">
+  Can't reach the YumCart backend. Start it with <code>java -cp out com.yumcart.ApiServerMain</code> and refresh this page.
+</div>
 
-  <div id="customerView" class="hidden">
-    <div class="topbar">
-      <div class="brand"><span class="dot"></span>YUMCART<small>/ track your order</small></div>
-      <button class="switch-role" onclick="backToRoleScreen()">← Switch view</button>
-    </div>
+<main>
+  <!-- HOME -->
+  <section id="homeView">
     <div class="hero">
-      <div class="eyebrow">Customer tracking</div>
-      <h1 class="page-title">Where's your order right now?</h1>
-      <p class="sub">Enter your order ID below to see its current checkpoint and full delivery timeline.</p>
-      <div class="search-row">
-        <input id="custSearchInput" type="text" placeholder="Enter your order ID, e.g. 9810" />
-        <button onclick="custTrack()">Track</button>
+      <div class="emoji-bg">🍕🍔🍛</div>
+      <h1>Hungry? Get your favourite food delivered fast.</h1>
+      <p>Order from the best restaurants and track every step live.</p>
+      <div class="searchbox">
+        <div class="sicon">🔍</div>
+        <input id="searchInput" type="text" placeholder="Search for restaurants or dishes" oninput="onSearch(this.value)">
       </div>
-      <div class="quick-ids">Try:
-        <button onclick="custQuick('2389')">2389</button>
-        <button onclick="custQuick('9810')">9810</button>
-      </div>
-    </div>
-    <div class="stage">
-      <div class="empty-state" id="custEmptyState">No order loaded — enter your order ID above to see its status.</div>
-      <div class="not-found" id="custNotFound">We couldn't find an order with that ID. Double-check and try again.</div>
-      <div class="waybill" id="custWaybill">
-        <div class="stamp" id="custStamp">VOID</div>
-        <div class="waybill-head">
-          <div><div class="wb-id-label">ORDER ID</div><div class="wb-id" id="custWbId">—</div></div>
-          <div class="wb-status"><div class="wb-id-label">CURRENT STATUS</div><span class="status-pill" id="custStatusPill"><span class="pulse"></span><span id="custStatusText">—</span></span></div>
-        </div>
-        <div class="rail-wrap"><div class="rail" id="custRail"><div class="rail-fill" id="custRailFill"></div></div></div>
-        <div class="panel-block">
-          <div class="panel-title">Delivery timeline</div>
-          <div class="log-list" id="custLogList"></div>
-        </div>
+      <div class="coupon-strip">
+        <div class="cp-chip">YUM10 · 10% off</div>
+        <div class="cp-chip">FLAT50 · ₹50 off</div>
       </div>
     </div>
-    <div class="footnote">This is a read-only tracking view — status updates are made by the seller side of the system.</div>
-  </div>
+    <div class="section-title" id="homeTitle">Restaurants to explore</div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="restGrid"></div>
+  </section>
+
+  <!-- RESTAURANT -->
+  <section id="restView" class="hidden">
+    <button class="back" onclick="goHome()">← All restaurants</button>
+    <div id="restHead"></div>
+    <div id="restMenu"></div>
+  </section>
+
+  <!-- TRACK -->
+  <section id="trackView" class="hidden">
+    <button class="back" onclick="goHome()">← Back to restaurants</button>
+    <div class="section-title" style="margin-top:8px;">Track your order</div>
+    <div class="track-search">
+      <input id="trackInput" type="text" placeholder="Order ID, e.g. YC1001" onkeydown="if(event.key==='Enter') trackFromInput()">
+      <button onclick="trackFromInput()">Track</button>
+    </div>
+    <div id="trackBody"></div>
+  </section>
+</main>
+
+<div id="cartBar" class="hidden" onclick="openCart()">
+  <div><span id="barCount">0 items</span><small id="barRest"></small></div>
+  <div>VIEW CART →</div>
+</div>
+
+<div id="overlay" onclick="closeCart()"></div>
+<aside id="drawer">
+  <div class="dr-head">Your cart <button onclick="closeCart()">✕</button></div>
+  <div id="drawerBody"></div>
+  <div id="drawerFoot" class="hidden"></div>
+</aside>
+
+<div id="toast"></div>
 
 <script>
-  const STATES = ["PLACED","CONFIRMED","SHIPPED","OUT_FOR_DELIVERY","DELIVERED"];
-  const LABELS = {
-    PLACED:"Placed", CONFIRMED:"Confirmed", SHIPPED:"Shipped",
-    OUT_FOR_DELIVERY:"Out for delivery", DELIVERED:"Delivered", NOT_DELIVERED:"Not delivered",
-    CANCELLED:"Cancelled", RETURNED:"Returned"
+  const API = "http://localhost:8787/api";
+  const DELIVERY_FEE = 30, TAX_RATE = 0.05;
+
+  const META = {
+    R1:{cuisine:'North Indian', emoji:'🍛', etaMin:30, grad:'linear-gradient(135deg,#FFB75E,#ED8F03)'},
+    R2:{cuisine:'Pizza',        emoji:'🍕', etaMin:25, grad:'linear-gradient(135deg,#FF9966,#FF5E62)'},
+    R3:{cuisine:'Burgers',      emoji:'🍔', etaMin:20, grad:'linear-gradient(135deg,#F7971E,#FFD200)'},
+    R4:{cuisine:'Chinese',      emoji:'🥡', etaMin:35, grad:'linear-gradient(135deg,#E96443,#904E95)'},
+    R5:{cuisine:'South Indian', emoji:'🍚', etaMin:25, grad:'linear-gradient(135deg,#56AB2F,#A8E063)'},
+    R6:{cuisine:'Desserts',     emoji:'🍰', etaMin:20, grad:'linear-gradient(135deg,#EE9CA7,#FFB6C1)'}
   };
+  const CAT_EMOJI = {Main:'🍛', Breads:'🍞', Beverage:'🥤', Dessert:'🍰', Pizza:'🍕', Starters:'🥟',
+                     Burgers:'🍔', Sides:'🍟', Noodles:'🍜', Rice:'🍚', Tiffin:'🥞'};
+
+  const STEPS = ["PLACED","CONFIRMED","SHIPPED","OUT_FOR_DELIVERY","DELIVERED"];
+  const FOOD = {PLACED:"Order placed", CONFIRMED:"Preparing", SHIPPED:"Picked up", OUT_FOR_DELIVERY:"On the way",
+                DELIVERED:"Delivered", NOT_DELIVERED:"Not delivered", CANCELLED:"Cancelled", RETURNED:"Returned"};
   const TRANSITIONS = {
-    PLACED:["CONFIRMED","CANCELLED"], CONFIRMED:["SHIPPED","CANCELLED"],
-    SHIPPED:["OUT_FOR_DELIVERY","CANCELLED"], OUT_FOR_DELIVERY:["DELIVERED","NOT_DELIVERED"],
-    DELIVERED:["RETURNED"], NOT_DELIVERED:["RETURNED"], CANCELLED:[], RETURNED:[]
+    PLACED:["CONFIRMED","CANCELLED"], CONFIRMED:["SHIPPED","CANCELLED"], SHIPPED:["OUT_FOR_DELIVERY","CANCELLED"],
+    OUT_FOR_DELIVERY:["DELIVERED","NOT_DELIVERED"], NOT_DELIVERED:["OUT_FOR_DELIVERY","CANCELLED"],
+    DELIVERED:["RETURNED"], CANCELLED:[], RETURNED:[]
   };
 
-  let orders = {
-    ORD1: { status:"PLACED", history:[{s:"PLACED", ok:true, note:"Order created"}] },
-    ORD2: { status:"SHIPPED", history:[
-      {s:"PLACED", ok:true, note:"Order created"},
-      {s:"CONFIRMED", ok:true, note:"Confirmed by warehouse"},
-      {s:"SHIPPED", ok:true, note:"Left facility"}
-    ]}
-  };
+  let restaurants = [];
+  let curRest = null;
+  let currentView = 'home';
+  let cart = { restaurantId:null, items:{} };   // items: menuItemId -> {item, qty}
+  let coupon = null;
+  let payMethod = 'UPI';
+  let filters = { q:'', cuisine:'All', rating:false, fast:false };
+  let trackId = null, pollTimer = null, lastTrackStatus = null;
 
-  // --- BUG FIX: single shared function that correctly computes rail
-  // progress for every status, including branch states like
-  // NOT_DELIVERED, CANCELLED, RETURNED — instead of each render
-  // function guessing separately (which caused the rail to wrongly
-  // reset to 0% for NOT_DELIVERED and for CANCELLED/RETURNED in the
-  // customer view).
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const fmt = n => { const v = Math.round(n*100)/100; return '₹' + (Number.isInteger(v) ? v : v.toFixed(2)); };
+  const metaOf = id => META[id] || {cuisine:'Restaurant', emoji:'🍽️', etaMin:30, grad:'linear-gradient(135deg,#ccc,#999)'};
+
+  function toast(msg, isError){
+    const t = $('toast');
+    t.textContent = msg; t.className = 'show' + (isError ? ' error' : '');
+    clearTimeout(toast._t); toast._t = setTimeout(()=>{ t.className = ''; }, 2600);
+  }
+
+  /* ---------- views ---------- */
+  function show(view){
+    currentView = view;
+    ['home','rest','track'].forEach(v => $(v+'View').classList.toggle('hidden', v !== view));
+    if(view !== 'track'){ clearInterval(pollTimer); pollTimer = null; }
+    window.scrollTo(0,0);
+    updateCartUI();
+  }
+  function goHome(){ show('home'); renderHome(); }
+
+  /* ---------- home ---------- */
+  async function init(){
+    try{
+      const res = await fetch(API + '/restaurants');
+      restaurants = await res.json();
+      $('apiError').classList.add('hidden');
+    }catch(e){
+      $('apiError').classList.remove('hidden');
+      restaurants = [];
+    }
+    renderHome();
+    updateCartUI();
+  }
+
+  function onSearch(v){ filters.q = v.trim(); renderGrid(); }
+
+  function renderHome(){
+    const cuisines = ['All', ...new Set(restaurants.map(r => metaOf(r.id).cuisine))];
+    $('chips').innerHTML =
+      cuisines.map(c => `<button class="chip ${filters.cuisine===c?'on':''}" onclick="setCuisine('${esc(c)}')">${esc(c)}</button>`).join('') +
+      `<button class="chip ${filters.rating?'on':''}" onclick="toggleFilter('rating')">⭐ Rating 4.0+</button>` +
+      `<button class="chip ${filters.fast?'on':''}" onclick="toggleFilter('fast')">⚡ Fast delivery</button>`;
+    renderGrid();
+  }
+  function setCuisine(c){ filters.cuisine = c; renderHome(); }
+  function toggleFilter(k){ filters[k] = !filters[k]; renderHome(); }
+
+  function visibleRestaurants(){
+    const q = filters.q.toLowerCase();
+    return restaurants.filter(r => {
+      const m = metaOf(r.id);
+      if(q && !(r.name.toLowerCase().includes(q) || m.cuisine.toLowerCase().includes(q) ||
+                r.menu.some(i => i.name.toLowerCase().includes(q)))) return false;
+      if(filters.cuisine !== 'All' && m.cuisine !== filters.cuisine) return false;
+      if(filters.rating && r.avgRating < 4) return false;
+      if(filters.fast && m.etaMin > 25) return false;
+      return true;
+    });
+  }
+
+  function renderGrid(){
+    const list = visibleRestaurants();
+    $('homeTitle').textContent = list.length + (list.length === 1 ? ' restaurant' : ' restaurants') + ' delivering to you';
+    if(!list.length){
+      $('restGrid').innerHTML = `<div class="empty" style="grid-column:1/-1">No restaurants match your search. Try a different dish or cuisine.</div>`;
+      return;
+    }
+    $('restGrid').innerHTML = list.map(r => {
+      const m = metaOf(r.id);
+      const rating = r.ratingCount > 0
+        ? `<span class="star">★</span>${r.avgRating.toFixed(1)}`
+        : `<span class="star new">★</span>New`;
+      return `<div class="rcard ${r.open?'':'closed'}" onclick="openRestaurant('${r.id}')">
+        <div class="rbanner" style="background:${m.grad}">${m.emoji}<div class="roffer">${r.open ? '10% OFF · YUM10' : 'Currently closed'}</div></div>
+        <div class="rinfo">
+          <div class="rname">${esc(r.name)}</div>
+          <div class="rmeta">${rating} · ${m.etaMin}-${m.etaMin+5} mins</div>
+          <div class="rsub">${esc(m.cuisine)}</div>
+          <div class="rsub">${esc(r.address)}</div>
+        </div></div>`;
+    }).join('');
+  }
+
+  /* ---------- restaurant page ---------- */
+  function openRestaurant(id){
+    curRest = restaurants.find(r => r.id === id);
+    if(!curRest) return;
+    show('rest');
+    const m = metaOf(curRest.id);
+    const rating = curRest.ratingCount > 0
+      ? `<div class="pill green">★ ${curRest.avgRating.toFixed(1)} <span style="font-weight:500">(${curRest.ratingCount} ratings)</span></div>`
+      : `<div class="pill">★ New</div>`;
+    $('restHead').innerHTML = `
+      <div class="rhead">
+        <div class="big" style="background:${m.grad}">${m.emoji}</div>
+        <div>
+          <h2>${esc(curRest.name)}</h2>
+          <div class="sub">${esc(m.cuisine)} · ${esc(curRest.address)}</div>
+          <div class="pills">${rating}<div class="pill">🕒 ${m.etaMin}-${m.etaMin+5} mins</div>
+            <div class="pill">${curRest.open ? '🟢 Open' : '🔴 Closed'}</div></div>
+        </div>
+      </div>
+      <div class="offers">
+        <div class="offer"><b>10% OFF</b>Use code YUM10</div>
+        <div class="offer"><b>FLAT ₹50 OFF</b>Use code FLAT50</div>
+      </div>`;
+    renderMenu();
+  }
+
+  function renderMenu(){
+    if(!curRest) return;
+    const cats = [];
+    curRest.menu.forEach(i => { if(!cats.includes(i.category)) cats.push(i.category); });
+    $('restMenu').innerHTML = cats.map(c => `
+      <div class="menu-cat">${esc(c)}</div>
+      <div>${curRest.menu.filter(i => i.category === c).map(dishHtml).join('')}</div>`).join('');
+  }
+
+  function qtyOf(itemId){
+    return (cart.restaurantId === (curRest && curRest.id) && cart.items[itemId]) ? cart.items[itemId].qty : 0;
+  }
+
+  function dishHtml(i){
+    const q = qtyOf(i.id);
+    const ctrl = !i.available || !curRest.open
+      ? `<button class="add-btn" disabled>UNAVAILABLE</button>`
+      : q > 0
+        ? `<div class="stepper"><button onclick="changeQty('${i.id}',-1)">−</button><span>${q}</span><button onclick="changeQty('${i.id}',1)">+</button></div>`
+        : `<button class="add-btn" onclick="addItem('${i.id}')">ADD</button>`;
+    return `<div class="dish">
+      <div class="dish-l"><h4>${esc(i.name)}</h4><div class="price">${fmt(i.price)}</div><span class="cat">${esc(i.category)}</span></div>
+      <div class="dish-r"><div class="dish-img">${CAT_EMOJI[i.category] || '🍽️'}</div>${ctrl}</div>
+    </div>`;
+  }
+
+  /* ---------- cart logic ---------- */
+  function cartCount(){ return Object.values(cart.items).reduce((n,x) => n + x.qty, 0); }
+
+  function addItem(itemId){
+    const item = curRest.menu.find(i => i.id === itemId);
+    if(!item) return;
+    if(cart.restaurantId && cart.restaurantId !== curRest.id && cartCount() > 0){
+      if(!confirm('Your cart has items from another restaurant. Clear it and add this item?')) return;
+      cart = { restaurantId:null, items:{} }; coupon = null;
+    }
+    cart.restaurantId = curRest.id;
+    cart.items[itemId] = { item, qty:1 };
+    afterCartChange();
+  }
+
+  function changeQty(itemId, d){
+    const line = cart.items[itemId];
+    if(!line) return;
+    line.qty += d;
+    if(line.qty <= 0) delete cart.items[itemId];
+    if(!Object.keys(cart.items).length){ cart.restaurantId = null; coupon = null; }
+    afterCartChange();
+  }
+
+  function afterCartChange(){
+    if(currentView === 'rest') renderMenu();
+    renderCart();
+    updateCartUI();
+  }
+
+  function computeBill(){
+    let subtotal = 0;
+    Object.values(cart.items).forEach(x => subtotal += x.item.price * x.qty);
+    let discount = 0;
+    if(coupon === 'YUM10') discount = subtotal * 0.10;
+    else if(coupon === 'FLAT50') discount = Math.min(50, subtotal);
+    const after = subtotal - discount;
+    const tax = after * TAX_RATE;
+    return { subtotal, discount, tax, fee:DELIVERY_FEE, total: after + tax + DELIVERY_FEE };
+  }
+
+  function updateCartUI(){
+    const n = cartCount();
+    const badge = $('cartBadge');
+    badge.textContent = n; badge.classList.toggle('zero', n === 0);
+    const bar = $('cartBar');
+    if(n > 0 && currentView === 'rest'){
+      const r = restaurants.find(x => x.id === cart.restaurantId);
+      $('barCount').textContent = n + (n === 1 ? ' item' : ' items') + ' · ' + fmt(computeBill().subtotal);
+      $('barRest').textContent = r ? 'from ' + r.name : '';
+      bar.classList.remove('hidden');
+    } else bar.classList.add('hidden');
+  }
+
+  function openCart(){ renderCart(); $('overlay').classList.add('open'); $('drawer').classList.add('open'); }
+  function closeCart(){ $('overlay').classList.remove('open'); $('drawer').classList.remove('open'); }
+
+  function applyCoupon(){
+    const code = $('couponInput').value.trim().toUpperCase();
+    if(code !== 'YUM10' && code !== 'FLAT50'){ toast('Invalid coupon code', true); return; }
+    coupon = code; renderCart(); toast('Coupon ' + code + ' applied');
+  }
+  function removeCoupon(){ coupon = null; renderCart(); }
+  function setPay(m){ payMethod = m; renderCart(); }
+
+  function renderCart(){
+    const ids = Object.keys(cart.items);
+    const body = $('drawerBody'), foot = $('drawerFoot');
+    if(!ids.length){
+      body.innerHTML = `<div class="empty-cart"><div class="big">🛒</div><h3>Your cart is empty</h3><p>Good food is always cooking. Add something from a restaurant.</p></div>`;
+      foot.classList.add('hidden');
+      return;
+    }
+    const r = restaurants.find(x => x.id === cart.restaurantId);
+    const b = computeBill();
+    const pays = [['UPI','📱 UPI'],['CARD','💳 Credit / Debit card'],['WALLET','👛 Wallet'],['CASH_ON_DELIVERY','💵 Cash on delivery']];
+    body.innerHTML = `
+      <div class="box">
+        <div class="cart-rest">${esc(r ? r.name : '')}<small>${esc(r ? r.address : '')}</small></div>
+        ${ids.map(id => { const x = cart.items[id]; return `
+          <div class="cart-line">
+            <div class="cl-name">${esc(x.item.name)}</div>
+            <div class="stepper"><button onclick="changeQty('${id}',-1)">−</button><span>${x.qty}</span><button onclick="changeQty('${id}',1)">+</button></div>
+            <div class="cl-price">${fmt(x.item.price * x.qty)}</div>
+          </div>`; }).join('')}
+      </div>
+      <div class="box">
+        <h5>Offers</h5>
+        ${coupon
+          ? `<div class="coupon-on"><span>🏷️ ${coupon} applied</span><button onclick="removeCoupon()">REMOVE</button></div>`
+          : `<div class="coupon-row"><input id="couponInput" placeholder="Enter coupon code"><button onclick="applyCoupon()">APPLY</button></div>
+             <div class="coupon-hint">Try YUM10 (10% off) or FLAT50 (₹50 off)</div>`}
+      </div>
+      <div class="box">
+        <h5>Bill details</h5>
+        <div class="bill-row"><span>Item total</span><span>${fmt(b.subtotal)}</span></div>
+        ${b.discount > 0 ? `<div class="bill-row disc"><span>Coupon discount</span><span>− ${fmt(b.discount)}</span></div>` : ''}
+        <div class="bill-row"><span>Delivery fee</span><span>${fmt(b.fee)}</span></div>
+        <div class="bill-row"><span>Taxes (5%)</span><span>${fmt(b.tax)}</span></div>
+        <div class="bill-row total"><span>To pay</span><span>${fmt(b.total)}</span></div>
+      </div>
+      <div class="box">
+        <h5>Payment method</h5>
+        ${pays.map(p => `<label class="pay-opt ${payMethod===p[0]?'on':''}">
+          <input type="radio" name="pay" ${payMethod===p[0]?'checked':''} onchange="setPay('${p[0]}')"> ${p[1]}</label>`).join('')}
+      </div>`;
+    foot.classList.remove('hidden');
+    foot.innerHTML = `<button class="place-btn" id="placeBtn" onclick="placeOrder()"><span>PLACE ORDER</span><span>${fmt(b.total)}</span></button>`;
+  }
+
+  async function placeOrder(){
+    const btn = $('placeBtn');
+    btn.disabled = true;
+    const payload = {
+      restaurantId: cart.restaurantId,
+      items: Object.values(cart.items).map(x => ({ id: x.item.id, qty: x.qty })),
+      payment: payMethod,
+      coupon: coupon || ''
+    };
+    try{
+      const res = await fetch(API + '/checkout', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if(!data.success){ toast(data.message || 'Could not place order', true); btn.disabled = false; return; }
+      cart = { restaurantId:null, items:{} }; coupon = null;
+      closeCart();
+      toast('Order ' + data.orderId + ' placed!');
+      showTrack(data.orderId);
+    }catch(e){
+      toast("Can't reach the server. Is the backend running?", true);
+      btn.disabled = false;
+    }
+  }
+
+  /* ---------- tracking ---------- */
+  function openTrack(){
+    show('track');
+    $('trackBody').innerHTML = trackId ? '' : `<div class="empty">Enter your order ID above to see live status.</div>`;
+    if(trackId) showTrack(trackId);
+  }
+  function trackFromInput(){
+    const id = $('trackInput').value.trim().toUpperCase();
+    if(id) showTrack(id);
+  }
+
+  async function showTrack(id){
+    trackId = id; lastTrackStatus = null;
+    show('track');
+    $('trackInput').value = id;
+    await refreshTrack();
+    clearInterval(pollTimer);
+    pollTimer = setInterval(refreshTrack, 3000);
+  }
+
+  async function refreshTrack(){
+    if(!trackId) return;
+    let o;
+    try{ o = await (await fetch(API + '/orders/' + encodeURIComponent(trackId))).json(); }
+    catch(e){ $('trackBody').innerHTML = `<div class="empty">Can't reach the server.</div>`; return; }
+    if(!o.found){
+      clearInterval(pollTimer);
+      $('trackBody').innerHTML = `<div class="empty">We couldn't find an order with ID <b>${esc(trackId)}</b>.</div>`;
+      return;
+    }
+    renderTrack(o);
+  }
+
   function getRailInfo(status){
-    if(status === 'DELIVERED')      return { activeIndex: STATES.length - 1, allDone:true,  isVoid:false };
-    if(status === 'RETURNED')       return { activeIndex: STATES.length - 1, allDone:true,  isVoid:true  };
-    if(status === 'NOT_DELIVERED')  return { activeIndex: STATES.indexOf('OUT_FOR_DELIVERY'), allDone:false, isVoid:true };
-    if(status === 'CANCELLED')      return { activeIndex: -1, allDone:false, isVoid:true };
-    const idx = STATES.indexOf(status);
+    if(status === 'DELIVERED')     return { activeIndex: STEPS.length-1, allDone:true,  isVoid:false };
+    if(status === 'RETURNED')      return { activeIndex: STEPS.length-1, allDone:true,  isVoid:true };
+    if(status === 'NOT_DELIVERED') return { activeIndex: STEPS.indexOf('OUT_FOR_DELIVERY'), allDone:false, isVoid:true };
+    if(status === 'CANCELLED')     return { activeIndex: -1, allDone:false, isVoid:true };
+    const idx = STEPS.indexOf(status);
     return { activeIndex: idx === -1 ? 0 : idx, allDone:false, isVoid:false };
   }
 
-  function enterApp(role){
-    document.getElementById('roleScreen').classList.add('hidden');
-    if(role === 'admin'){ document.getElementById('adminView').classList.remove('hidden'); }
-    else { document.getElementById('customerView').classList.remove('hidden'); }
-  }
-  function backToRoleScreen(){
-    document.getElementById('adminView').classList.add('hidden');
-    document.getElementById('customerView').classList.add('hidden');
-    document.getElementById('roleScreen').classList.remove('hidden');
-  }
-
-  function renderRail(railEl, fillEl, info){
-    railEl.querySelectorAll('.checkpoint').forEach(e=>e.remove());
-    STATES.forEach((s, i)=>{
-      const cp = document.createElement('div');
-      cp.className = 'checkpoint';
-      if(i < info.activeIndex || info.allDone) cp.classList.add('done');
-      if(i === info.activeIndex && !info.allDone){
-        cp.classList.add('current');
-        if(info.isVoid) cp.classList.add('void');
-      }
-      cp.innerHTML = `<div class="cp-dot"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="#0A1420" stroke-width="1.6"/></svg></div><div class="cp-label">${LABELS[s]}</div>`;
-      railEl.appendChild(cp);
-    });
-    let pct;
-    if(info.allDone) pct = 100;
-    else if(info.activeIndex <= 0) pct = 0;
-    else pct = (info.activeIndex / (STATES.length - 1)) * 100;
-    fillEl.style.width = pct + '%';
-    fillEl.classList.toggle('void', info.isVoid);
+  function railHtml(status){
+    const info = getRailInfo(status);
+    return '<div class="rail">' + STEPS.map((s,i) => {
+      let cls = '';
+      if(i < info.activeIndex || info.allDone) cls = 'done';
+      else if(i === info.activeIndex) cls = info.isVoid ? 'void' : 'current';
+      return `<div class="step ${cls}"><div class="dot">${cls==='done' ? '✓' : (i+1)}</div><div class="slabel">${FOOD[s]}</div></div>`;
+    }).join('') + '</div>';
   }
 
-  function setStatusPill(pillEl, textEl, stampEl, order){
-    pillEl.className = 'status-pill';
-    stampEl.classList.remove('show');
-    const info = getRailInfo(order.status);
-    if(info.isVoid){
-      pillEl.classList.add('st-void');
-      stampEl.textContent = order.status;
-      stampEl.classList.add('show');
-    } else if(order.status === 'DELIVERED'){
-      pillEl.classList.add('st-done');
-    } else {
-      pillEl.classList.add('st-active');
-    }
-    textEl.textContent = LABELS[order.status];
+  function headline(o){
+    const p = o.partner || 'Your delivery partner';
+    return ({
+      PLACED:['Order placed','Waiting for the restaurant to confirm'],
+      CONFIRMED:['Preparing your food','The restaurant is cooking your order'],
+      SHIPPED:['Order picked up', p + ' has picked up your order'],
+      OUT_FOR_DELIVERY:['On the way!', p + ' is heading to your location'],
+      DELIVERED:['Delivered. Enjoy your meal! 🎉','Hope you love it'],
+      NOT_DELIVERED:['Delivery attempt failed','We will try delivering again shortly'],
+      CANCELLED:['Order cancelled','This order will not be delivered'],
+      RETURNED:['Order returned','This order was returned']
+    })[o.status] || [o.status, ''];
   }
 
-  /* ---------- ADMIN LOGIC ---------- */
-  let adminCurrentId = null;
-  function adminQuick(id){ document.getElementById('adminSearchInput').value = id; adminTrack(); }
-  function adminTrack(){
-    const id = document.getElementById('adminSearchInput').value.trim().toUpperCase();
-    if(!id) return;
-    if(!orders[id]) orders[id] = { status:"PLACED", history:[{s:"PLACED", ok:true, note:"Order created on first lookup"}] };
-    adminCurrentId = id;
-    renderAdmin();
-  }
-  function renderAdmin(){
-    const order = orders[adminCurrentId];
-    document.getElementById('adminEmptyState').style.display = 'none';
-    const wb = document.getElementById('adminWaybill');
-    wb.style.display = 'block';
-    document.getElementById('adminWbId').textContent = adminCurrentId;
+  function renderTrack(o){
+    const info = getRailInfo(o.status);
+    const [msg, sub] = headline(o);
+    const badgeCls = o.status === 'DELIVERED' ? 'done' : (info.isVoid ? 'void' : 'active');
+    const r = restaurants.find(x => x.id === o.restaurantId);
+    const rName = r ? r.name : '';
+    const items = (o.items || []);
+    const itemTotal = items.reduce((n,i) => n + i.price * i.qty, 0);
 
-    setStatusPill(
-      document.getElementById('adminStatusPill'),
-      document.getElementById('adminStatusText'),
-      document.getElementById('adminStamp'),
-      order
-    );
-
-    renderRail(document.getElementById('adminRail'), document.getElementById('adminRailFill'), getRailInfo(order.status));
-
-    const logList = document.getElementById('adminLogList');
-    logList.innerHTML = '';
-    order.history.slice().reverse().forEach((h,i)=>{
-      const div = document.createElement('div');
-      div.className = 'log-item';
-      div.innerHTML = `<span class="log-time">#${order.history.length - i}</span><span class="${h.ok?'log-ok':'log-bad'}">${h.ok?'APPLIED':'REJECTED'}</span><span class="log-text">${LABELS[h.s] || h.s}${h.note?' — '+h.note:''}</span>`;
-      logList.appendChild(div);
-    });
-
-    const sel = document.getElementById('adminStatusSelect');
-    sel.innerHTML = Object.keys(LABELS).map(s=>`<option value="${s}">${LABELS[s]}</option>`).join('');
-    document.getElementById('adminFeedback').className = 'feedback';
-  }
-  function adminApplyUpdate(){
-    const order = orders[adminCurrentId];
-    const requested = document.getElementById('adminStatusSelect').value;
-    const fb = document.getElementById('adminFeedback');
-    const allowed = TRANSITIONS[order.status] || [];
-    if(allowed.includes(requested)){
-      order.status = requested;
-      order.history.push({s:requested, ok:true, note:"Validated & applied"});
-      fb.textContent = `APPLIED — moved to ${LABELS[requested]}`;
-      fb.className = 'feedback ok';
-    } else {
-      order.history.push({s:requested, ok:false, note:`Illegal from ${LABELS[order.status]}`});
-      fb.textContent = `REJECTED — cannot go ${LABELS[order.status]} → ${LABELS[requested]}`;
-      fb.className = 'feedback bad';
-      const wb = document.getElementById('adminWaybill');
-      wb.style.animation = 'none';
-      requestAnimationFrame(()=>{ wb.style.animation = 'shake .4s ease'; });
-    }
-    renderAdmin();
-    document.getElementById('adminFeedback').className = fb.className;
-    document.getElementById('adminFeedback').textContent = fb.textContent;
+    $('trackBody').innerHTML = `
+      <div class="tcard">
+        <div class="t-top">
+          <div><div class="t-id">ORDER ${esc(o.orderId)}${rName ? ' · ' + esc(rName) : ''}</div>
+            <div class="t-msg">${esc(msg)}</div><div class="t-sub">${esc(sub)}</div></div>
+          <div class="t-badge ${badgeCls}">${FOOD[o.status] || o.status}</div>
+        </div>
+        ${railHtml(o.status)}
+      </div>
+      <div class="t-grid">
+        <div class="tcard">
+          ${o.partner ? `<div class="rider"><div class="av">🛵</div><div><b>${esc(o.partner)}</b><div class="t-sub">Your delivery partner</div></div></div>` : ''}
+          <div class="demo-title">Order summary</div>
+          ${items.length ? items.map(i => `<div class="t-line"><span>${i.qty} × ${esc(i.name)}</span><b>${fmt(i.price * i.qty)}</b></div>`).join('') : `<div class="t-sub">No item details for this order.</div>`}
+          ${items.length ? `<div class="t-line total"><span>Paid (incl. fees & taxes)</span><span>${fmt(o.total)}</span></div>` : ''}
+        </div>
+        <div class="tcard">
+          <div class="demo-title">Demo controls</div>
+          <div class="demo-sub">Simulates updates from the restaurant and delivery partner. Each push goes through the backend queue and validator.</div>
+          <div class="demo-btns" id="demoBtns"></div>
+        </div>
+      </div>`;
+    renderDemoButtons(o.status);
   }
 
-  /* ---------- CUSTOMER LOGIC ---------- */
-  function custQuick(id){ document.getElementById('custSearchInput').value = id; custTrack(); }
-  function custTrack(){
-    const id = document.getElementById('custSearchInput').value.trim().toUpperCase();
-    if(!id) return;
-    document.getElementById('custNotFound').style.display = 'none';
-    document.getElementById('custEmptyState').style.display = 'none';
-    if(!orders[id]){
-      document.getElementById('custWaybill').style.display = 'none';
-      document.getElementById('custNotFound').style.display = 'block';
-      return;
-    }
-    renderCustomer(orders[id], id);
+  function renderDemoButtons(status){
+    const next = TRANSITIONS[status] || [];
+    $('demoBtns').innerHTML = next.length
+      ? next.map(s => `<button class="${s==='CANCELLED'||s==='NOT_DELIVERED'?'danger':''}" onclick="pushStatus('${s}')">Mark: ${FOOD[s]}</button>`).join('')
+      : `<div class="t-sub">No further updates possible. This order is in a final state.</div>`;
   }
-  function renderCustomer(order, id){
-    const wb = document.getElementById('custWaybill');
-    wb.style.display = 'block';
-    document.getElementById('custWbId').textContent = id;
 
-    setStatusPill(
-      document.getElementById('custStatusPill'),
-      document.getElementById('custStatusText'),
-      document.getElementById('custStamp'),
-      order
-    );
-
-    renderRail(document.getElementById('custRail'), document.getElementById('custRailFill'), getRailInfo(order.status));
-
-    const logList = document.getElementById('custLogList');
-    logList.innerHTML = '';
-    order.history.forEach((h,i)=>{
-      const div = document.createElement('div');
-      div.className = 'log-item';
-      const isLast = i === order.history.length - 1;
-      div.innerHTML = `<span class="log-time">STEP ${i+1}</span><span class="${isLast?'log-current':'log-text'}">${LABELS[h.s] || h.s}${h.note?' — '+h.note:''}</span>`;
-      logList.appendChild(div);
-    });
+  async function pushStatus(s){
+    try{
+      const res = await fetch(API + '/orders/' + encodeURIComponent(trackId) + '/status', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({status:s})
+      });
+      const data = await res.json();
+      toast(data.message, !data.applied);
+      refreshTrack();
+    }catch(e){ toast("Can't reach the server.", true); }
   }
+
+  init();
 </script>
-
 </body>
 </html>
