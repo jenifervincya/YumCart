@@ -52,7 +52,7 @@ public class ApiServerMain {
 
         OrderApiServer server = new OrderApiServer(store, processor, restaurants, ratings,
                 new PricingService(), payments, assignments);
-        server.start(8787);
+        server.start(System.getenv("PORT") != null ? Integer.parseInt(System.getenv("PORT")) : 8787);
 
         System.out.println("Leave this terminal open. Serve docs/ and open it in your browser.");
         System.out.println("Press Ctrl+C to stop.");
